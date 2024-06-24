@@ -531,13 +531,13 @@ int main(int argc, char *argv[])
   int publish_port = PUBLISHER_PORT;
 
   // Parse command-line arguments
-  if (std::strcmp(argv[1], "-h") == 0)
-  {
-    std::cout << "Usage: " << argv[0] << " [publish_ip] [publish_port]" << std::endl;
-    std::cout << "  publish_ip: IP address to publish to (default: " << publish_ip << ")" << std::endl;
-    std::cout << "  publish_port: Port to publish to (default: " << publish_port << ")" << std::endl;
-    return 0;
-  }
+  //if (std::strcmp(argv[1], "-h") == 0)
+  //{
+  //  std::cout << "Usage: " << argv[0] << " [publish_ip] [publish_port]" << std::endl;
+  //  std::cout << "  publish_ip: IP address to publish to (default: " << publish_ip << ")" << std::endl;
+  //  std::cout << "  publish_port: Port to publish to (default: " << publish_port << ")" << std::endl;
+  //  return 0;
+  //}
 
   if (argc > 1)
   {
