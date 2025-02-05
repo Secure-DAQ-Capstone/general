@@ -2,13 +2,21 @@ cmake_minimum_required(VERSION 3.16)
 project(my_project)
 
 find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+message(STATUS "Protobuf Include Dir: ${Protobuf_INCLUDE_DIRS}")
 
+# Specify the .proto file
+set(PROTO_FILE_PATH our_protobuf/packet.proto)
+
+# Generate the .cc and .h files from the .proto file
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_PATH})
+
+# Include the generated protobuf headers
+include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will be in the build directory
 # Add subdirectories for the libraries
 add_subdirectory(lib/NMEA2000)
 add_subdirectory(lib/NMEA2000_socketCAN)
 
-set(PROTO_SRCS our_protobuf/packet.pb.cc)
-set(PROTO_HDRS our_protobuf/packet.pb.h)
 
 # Define the main executable
 add_executable(my_project main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
