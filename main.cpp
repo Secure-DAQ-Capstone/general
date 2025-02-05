@@ -42,10 +42,10 @@ template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* labe
 }
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  {130310L,&OutsideEnvironmental},
+  //{130310L,&OutsideEnvironmental},
   {130312L,&Temperature},
-  {130313L,&Humidity},
-  {130316L,&TemperatureExt},
+  //{130313L,&Humidity},
+  //{130316L,&TemperatureExt},
   {0,0}
 };
 
