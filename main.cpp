@@ -114,7 +114,9 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
       // Print the packet
       printPacket(packet);
-
+	std::string string_data;
+      packet.SerializeToString(&string_data);
+	cout << string_data << endl;
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -180,7 +182,7 @@ void printPacket(const Packet& packet) {
         cout << "  Data:" << endl;
         cout << "    Type: " << packet.data().type() << endl;
         cout << "    Fields:" << endl;
-        for (const auto& field : packet.data().fields()) {
+        for (const auto& field : packet.data().double_fields()) {
             cout << "      - " << field.label() << ": " << field.value() << endl;
         }
     }
