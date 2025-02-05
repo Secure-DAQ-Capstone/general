@@ -84,21 +84,22 @@ void Temperature(const tN2kMsg &N2kMsg) {
       PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
-      tutorial::Packet_Data* data;
+      tutorial::Packet_Data* data = packet.mutable_data();
 
       data->set_type("temperature");
 
-      tutorial::Packet_DataField* data_field = data->add_fields();
+      tutorial::Packet_DataField* field1 = data->add_fields();
 
-      data_field->set_label("temperature");
-      data_field->set_value(ActualTemperature);
+      field1->set_label("temperature");
+      field1->set_value(ActualTemperature);
 
-      packet.set_allocated_data(data);
 
       packet.set_board_id(123);
       
       // Set timestamp
-      *packet.mutable_time_data_read() = TimeUtil::GetCurrentTime();
+    google::protobuf::Timestamp* timestamp = packet.mutable_time_data_read();
+    timestamp->set_seconds(time(NULL));  // Set the timestamp to current time in seconds
+
 
 
 
