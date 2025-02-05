@@ -14,6 +14,8 @@
 #include <iostream>
 #include "NMEA2000_CAN.h"
 #include <N2kMessages.h>
+#include "packet.pb.h"
+#include <google/protobuf/util/time_util.h>
 //#include <N2kMessagesEnumToStr.h>
 using namespace std;
 
@@ -72,14 +74,30 @@ void Temperature(const tN2kMsg &N2kMsg) {
     tN2kTempSource TempSource;
     double ActualTemperature;
     double SetTemperature;
+
+    tutorial::Packet packet;
     
     if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
                         //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
       PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
+
+      tutorial::Packet_Data* data;
+
+      data->set_type("temperature");
+
+      tutorial::Packet_DataField* data_field = data->add_fields();
+
+      data_field->set_label("temperature");
+      data_field->set_value(ActualTemperature);
+
+      packet.set_allocated_data(data);
+
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
     }
+
+
 }
 
 //*****************************************************************************
@@ -128,6 +146,9 @@ void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
 
 int main(void)
 {
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    
     cout << "Starting CAN watching" << endl;
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
