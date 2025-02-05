@@ -113,10 +113,14 @@ void Temperature(const tN2kMsg &N2kMsg) {
       packet.set_digital_signature(9876543210);
 
       // Print the packet
-      printPacket(packet);
+      //printPacket(packet);
 	std::string string_data;
       packet.SerializeToString(&string_data);
 	cout << string_data << endl;
+
+      tutorial::Packet p2;
+      p2.ParseFromString(string_data);
+printPacket(p2);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
