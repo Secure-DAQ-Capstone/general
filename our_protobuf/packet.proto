@@ -32,7 +32,7 @@ message Packet {
 
   message Data {
     string type = 1;
-    repeated DataField fields = 2;
+    repeated DataField double_fields = 2;
   }
 
   message DataField {

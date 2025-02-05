@@ -88,8 +88,8 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
       data->set_type("temperature");
 
-      tutorial::Packet_DataField* field1 = data->add_fields();
-
+      tutorial::Packet_DataField* field1 = data->add_double_fields();
+      cout << "Fhdsfdjh" << ActualTemperature <<endl;
       field1->set_label("temperature");
       field1->set_value(ActualTemperature);
 
