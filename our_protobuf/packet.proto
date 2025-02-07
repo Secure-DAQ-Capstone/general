@@ -1,0 +1,45 @@
+// See README.md for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package tutorial;
+
+import "google/protobuf/timestamp.proto";
+// [END declaration]
+
+// [START messages]
+message Packet {
+  int32 board_id = 1;
+  google.protobuf.Timestamp time_data_read = 2;
+  Data data = 3;
+
+  OriginalProtocol protocol = 4;
+  bytes original_message = 5;
+
+  int64 digital_signature = 6;
+
+
+  enum OriginalProtocol {
+    CAN = 0;
+    Modbus = 1;
+  }
+
+  message Data {
+    string type = 1;
+    repeated DataField double_fields = 2;
+  }
+
+  message DataField {
+    string label = 1;
+    double value = 2;
+  }
+
+}
+
+// [END messages]
