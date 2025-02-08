@@ -12,6 +12,10 @@ This will pull the submodules into your local repo
 git submodule update --init --recursive
 ```
 
+```bash
+git submodule update --recursive
+```
+
 List the git branches for each submodules
 
 ```bash

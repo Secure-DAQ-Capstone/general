@@ -16,6 +16,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will b
 # Add subdirectories for the libraries
 add_subdirectory(lib/NMEA2000)
 add_subdirectory(lib/NMEA2000_socketCAN)
+add_subdirectory(lib/udp_lib)
 
 
 # Define the main executable

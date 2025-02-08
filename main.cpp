@@ -16,6 +16,8 @@
 #include <N2kMessages.h>
 #include "packet.pb.h"
 #include <google/protobuf/util/time_util.h>
+#include "publisher.cpp"
+
 //#include <N2kMessagesEnumToStr.h>
 using namespace std;
 using google::protobuf::util::TimeUtil;
@@ -234,8 +236,24 @@ int main(void)
     
     cout  << endl << "CAN started, going to watch it now" << endl;
 
-     while(1) {
-         NMEA2000.ParseMessages();                                               // Will send out CAN messages in open text 
+    // Example usage of Publisher
+    Publisher publisher(1024, 12345, INADDR_ANY);
+
+    // Create a timestamp
+    google::protobuf::Timestamp timestamp;
+    timestamp.set_seconds(time(NULL));
+    timestamp.set_nanos(0);
+
+    // Create a data object
+    tutorial::Packet::Data data;
+    // Set data fields here
+
+
+    while(1) {
+        NMEA2000.ParseMessages();   // Will send out CAN messages in open text 
+         
+        // Send a UDP packet
+        publisher.publish(1, timestamp, data, tutorial::Packet::CAN, "Original message", 1234567890);
     }
     
     return 0;
