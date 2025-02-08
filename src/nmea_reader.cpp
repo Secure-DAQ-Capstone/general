@@ -1,14 +1,3 @@
-/* 
- * File:   main.cpp
- * Author: al
- *
- * Testing for CAN and RPI 
- * 
- * See: https://github.com/thomasonw/NMEA2000_socketCAN
- *
- * Created on February 12, 2017, 2:37 PM
- */
- 
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
@@ -16,10 +5,11 @@
 #include <N2kMessages.h>
 #include "packet.pb.h"
 #include <google/protobuf/util/time_util.h>
+#include "udp_pub.h"
 //#include <N2kMessagesEnumToStr.h>
 using namespace std;
 using google::protobuf::util::TimeUtil;
-using namespace tutorial;
+using namespace capstone_protobuf;
 typedef struct {
   unsigned long PGN;
   void (*Handler)(const tN2kMsg &N2kMsg); 
@@ -77,18 +67,18 @@ void Temperature(const tN2kMsg &N2kMsg) {
     double ActualTemperature;
     double SetTemperature;
 
-    tutorial::Packet packet;
+    Packet packet;
     
     if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
                         //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
       PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
-      tutorial::Packet_Data* data = packet.mutable_data();
+      Packet_Data* data = packet.mutable_data();
 
       data->set_type("temperature");
 
-      tutorial::Packet_DataField* field1 = data->add_double_fields();
+      Packet_DataField* field1 = data->add_double_fields();
       cout << "Fhdsfdjh" << ActualTemperature <<endl;
       field1->set_label("temperature");
       field1->set_value(ActualTemperature);
@@ -104,7 +94,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
 
       // Set protocol
-      packet.set_protocol(tutorial::Packet::CAN);
+      packet.set_protocol(Packet::CAN);
 
       // Set original message
       packet.set_original_message("\xDE\xAD\xBE\xEF", 4);
@@ -118,7 +108,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
       packet.SerializeToString(&string_data);
 	cout << string_data << endl;
 
-      tutorial::Packet p2;
+      Packet p2;
       p2.ParseFromString(string_data);
 printPacket(p2);
 
@@ -217,7 +207,7 @@ int main(void)
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    
+    UDPPub pub(1,2,3);
     cout << "Starting CAN watching" << endl;
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
