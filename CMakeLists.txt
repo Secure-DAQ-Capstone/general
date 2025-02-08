@@ -38,11 +38,3 @@ target_link_libraries(nmea_reader
     libudp_sub
 )
 
-# # Include directories
-# target_include_directories(my_project PRIVATE
-#     lib/NMEA2000/src
-#     lib/NMEA2000_socketCAN
-#     ${Protobuf_INCLUDE_DIRS}
-#     our_protobuf/
-# )
-
