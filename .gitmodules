@@ -1,6 +1,6 @@
-[submodule "lib/NMEA2000"]
-	path = lib/NMEA2000
+[submodule "submodules/NMEA2000"]
+	path = submodules/NMEA2000
 	url = https://github.com/ttlappalainen/NMEA2000.git
-[submodule "lib/NMEA2000_socketCAN"]
-	path = lib/NMEA2000_socketCAN
+[submodule "submodules/NMEA2000_socketCAN"]
+	path = submodules/NMEA2000_socketCAN
 	url = git@github.com:gpearcey/NMEA2000_socketCAN.git
