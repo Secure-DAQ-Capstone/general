@@ -4,6 +4,3 @@
 [submodule "lib/protobuf"]
 	path = lib/protobuf
 	url = https://github.com/protocolbuffers/protobuf.git
-[submodule "lib/NMEA2000_socketCAN"]
-	path = lib/NMEA2000_socketCAN
-	url = git@github.com:gpearcey/NMEA2000_socketCAN.git
