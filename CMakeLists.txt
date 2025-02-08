@@ -13,10 +13,18 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_PATH})
 
 # Include the generated protobuf headers
 include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will be in the build directory
+include_directories(include)
+
 # Add subdirectories for the libraries
 add_subdirectory(submodules/NMEA2000)
 add_subdirectory(submodules/NMEA2000_socketCAN)
 
+add_library(libudp_pub
+  lib/udp_pub.cpp
+)
+add_library(libudp_sub
+  lib/udp_sub.cpp
+)
 
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
@@ -26,6 +34,8 @@ target_link_libraries(nmea_reader
     PRIVATE nmea2000
     PRIVATE nmea2000_socketCAN    
     PRIVATE ${Protobuf_LIBRARIES}
+    libudp_pub
+    libudp_sub
 )
 
 # # Include directories

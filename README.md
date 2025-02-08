@@ -12,6 +12,13 @@ This will pull the submodules into your local repo
 git submodule update --init --recursive
 ```
 
+## Dependancies
+### Protocol Buffer Compiler 
+Instructions [here](https://grpc.io/docs/protoc-installation/).
+```
+sudo apt install -y protobuf-compiler
+```
+
 ## Build
 In the nmea_test directory:
 
@@ -24,5 +31,5 @@ make
 To run:
 ```
 cd build
-./my_project
+./nmea_reader
 ```

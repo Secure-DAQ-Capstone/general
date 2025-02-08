@@ -1,14 +1,3 @@
-/* 
- * File:   main.cpp
- * Author: al
- *
- * Testing for CAN and RPI 
- * 
- * See: https://github.com/thomasonw/NMEA2000_socketCAN
- *
- * Created on February 12, 2017, 2:37 PM
- */
- 
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
@@ -16,6 +5,7 @@
 #include <N2kMessages.h>
 #include "packet.pb.h"
 #include <google/protobuf/util/time_util.h>
+#include "udp_pub.h"
 //#include <N2kMessagesEnumToStr.h>
 using namespace std;
 using google::protobuf::util::TimeUtil;
@@ -217,7 +207,7 @@ int main(void)
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    
+    UDPPub pub(1,2,3);
     cout << "Starting CAN watching" << endl;
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
