@@ -21,8 +21,7 @@ std::vector<int> PGNS;
 void Temperature(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental2(const tN2kMsg &N2kMsg);
-void Humidity(const tN2kMsg &N2kMsg);
-void TemperatureExt(const tN2kMsg &N2kMsg);
+
 void VesselHeading(const tN2kMsg &N2kMsg);
 void printPacket(const capstone_protobuf::Packet& packet);
 
@@ -39,16 +38,17 @@ template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* labe
 }
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  {130310L,&OutsideEnvironmental},
-  {130312L,&Temperature},
+  //{130310L,&OutsideEnvironmental},
+  //{130312L,&Temperature},
   {130311L,&OutsideEnvironmental2},
-  {130316L,&VesselHeading},
+  //{130316L,&VesselHeading},
   {0,0}
 };
 
 
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
+  cout << "  OutsideEnvironmental" << endl;
       google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
     unsigned char SID;
@@ -83,7 +83,7 @@ void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
     payload->set_allocated_data(data);
     payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload->set_original_message("Outside Env 310");
-    payload->set_digital_signature("12345");
+    payload->set_digital_signature("310");
 
     packet.set_allocated_payload(payload);
 std::string string_data;
@@ -107,15 +107,17 @@ std::string string_data;
     payload2->set_allocated_data(data2);
     payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload2->set_original_message("Outside Env 310");
-    payload2->set_digital_signature("12345");
+    payload2->set_digital_signature("310");
 
     packet.set_allocated_payload(payload2);
        printPacket(packet);
 
-
+cout << "END  OutsideEnvironmental" << endl;
 
 }
 void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
+    cout << "  OutsideEnvironmental2" << endl;
+
       google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
     unsigned char SID;
@@ -154,7 +156,7 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
     payload->set_allocated_data(data);
     payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload->set_original_message("Env Params 311");
-    payload->set_digital_signature("12345");
+    payload->set_digital_signature("311");
 
     packet.set_allocated_payload(payload);
 std::string string_data;
@@ -178,36 +180,17 @@ std::string string_data;
     payload2->set_allocated_data(data2);
     payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload2->set_original_message("Env Params 311");
-    payload2->set_digital_signature("12345");
+    payload2->set_digital_signature("311");
 
     packet.set_allocated_payload(payload2);
        printPacket(packet);
 
-// Pressure
-    capstone_protobuf::Packet::Payload *payload3 = new capstone_protobuf::Packet::Payload();
-    payload3->set_allocated_time_data_captured(timestamp);
-
-    // Set data
-    capstone_protobuf::Humidity humidity_data;
-    humidity_data.set_humidity(Humidity);
-    //google::protobuf::Any any_data;
-    any_data.PackFrom(humidity_data);
-    capstone_protobuf::Packet::Payload::Data *data3 = new capstone_protobuf::Packet::Payload::Data();
-    data3->set_label("humidity");
-    data3->add_data()->PackFrom(humidity_data);
-
-    // Fill out payload
-    payload3->set_allocated_data(data3);
-    payload3->set_protocol(capstone_protobuf::Packet::Payload::CAN);
-    payload3->set_original_message("Env Params 311");
-    payload3->set_digital_signature("12345");
-
-    packet.set_allocated_payload(payload3);
-       printPacket(packet);
+    cout << "END  OutsideEnvironmental2" << endl;
 
 }
 //*****************************************************************************
 void Temperature(const tN2kMsg &N2kMsg) {
+  cout << "  Temperature" << endl;
     // get time captured data
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
@@ -263,6 +246,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
 }
 void VesselHeading(const tN2kMsg &N2kMsg) {
+  cout << "VEsselHeading" << endl;
     // get time captured data
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
