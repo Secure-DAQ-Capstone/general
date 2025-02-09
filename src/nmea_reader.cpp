@@ -16,6 +16,7 @@ typedef struct {
 } tNMEA2000Handler;
 
 tSocketStream serStream; 
+std::vector<int> PGNS;
 
 void Temperature(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg);
@@ -75,8 +76,8 @@ void Temperature(const tN2kMsg &N2kMsg) {
     
     if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
                         //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
+      //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
     capstone_protobuf::Packet packet;
 
@@ -137,7 +138,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
        capstone_protobuf::Packet p2;
        p2.ParseFromString(string_data);
- printPacket(p2);
+ //printPacket(p2);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -182,12 +183,31 @@ void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
   int iHandler;
   
   // Find handler
-  serStream.print("In Main Handler: "); serStream.println(N2kMsg.PGN);
+  //serStream.print("In Main Handler: "); serStream.println(N2kMsg.PGN);
   for (iHandler=0; NMEA2000Handlers[iHandler].PGN!=0 && !(N2kMsg.PGN==NMEA2000Handlers[iHandler].PGN); iHandler++);
   
   if (NMEA2000Handlers[iHandler].PGN!=0) {
     NMEA2000Handlers[iHandler].Handler(N2kMsg); 
   }
+    // Check if the PGN is already in the vector
+    bool pgnExists = false;
+    for (int i = 0; i < PGNS.size(); ++i) {
+        if (PGNS[i] == N2kMsg.PGN) {
+            pgnExists = true;
+            break;
+        }
+    }
+
+    // If the PGN is not in the vector, add it and print the current PGNs
+    if (!pgnExists) {
+        PGNS.push_back(N2kMsg.PGN);
+        std::cout << "Added PGN: " << N2kMsg.PGN << std::endl;
+        std::cout << "Current PGNs in vector: ";
+        for (int pgn : PGNS) {
+            std::cout << pgn << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void printPacket(const capstone_protobuf::Packet& packet) {
@@ -251,7 +271,7 @@ int main(void)
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
  
    
-    NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
+    //NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
     NMEA2000.SetForwardType(tNMEA2000::fwdt_Text);   
     NMEA2000.SetMsgHandler(HandleNMEA2000Msg);                           // Show in clear text (for now)
        
