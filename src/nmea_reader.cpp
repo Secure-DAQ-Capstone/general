@@ -9,7 +9,7 @@
 //#include <N2kMessagesEnumToStr.h>
 using namespace std;
 using google::protobuf::util::TimeUtil;
-using namespace capstone_protobuf;
+
 typedef struct {
   unsigned long PGN;
   void (*Handler)(const tN2kMsg &N2kMsg); 
@@ -21,7 +21,7 @@ void Temperature(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg);
 void Humidity(const tN2kMsg &N2kMsg);
 void TemperatureExt(const tN2kMsg &N2kMsg);
-void printPacket(const Packet& packet);
+void printPacket(const capstone_protobuf::Packet& packet);
 
 template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* label, T val, double (*ConvFunc)(double val)=0, bool AddLf=false, int8_t Desim=-1 ) {
   serStream.print(label);
@@ -61,56 +61,83 @@ void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
 }
 //*****************************************************************************
 void Temperature(const tN2kMsg &N2kMsg) {
+    // get time captured data
+    google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+    timestamp->set_seconds(time(nullptr));
+
     unsigned char SID;
     unsigned char TempInstance;
     tN2kTempSource TempSource;
     double ActualTemperature;
     double SetTemperature;
 
-    Packet packet;
+    
     
     if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
                         //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
       PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
-      Packet_Data* data = packet.mutable_data();
+    capstone_protobuf::Packet packet;
 
-      data->set_type("temperature");
+    // Set timestamp
+    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+    payload->set_allocated_time_data_captured(timestamp);
 
-      Packet_DataField* field1 = data->add_double_fields();
-      cout << "Fhdsfdjh" << ActualTemperature <<endl;
-      field1->set_label("temperature");
-      field1->set_value(ActualTemperature);
+    // Set data
+    capstone_protobuf::Temperature temp_data;
+    temp_data.set_temperature(ActualTemperature);
+    google::protobuf::Any any_data;
+    any_data.PackFrom(temp_data);
+    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
+    data->set_label("temperature");
+    data->add_data()->PackFrom(temp_data);
+
+    // Fill out payload
+    payload->set_allocated_data(data);
+    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload->set_original_message("Raw temperature data");
+    payload->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload);
+
+      // capstone_protobuf::Packet_Payload* data = packet.mutable_data();
+
+//       data->set_type("temperature");
+
+//       Packet_DataField* field1 = data->add_double_fields();
+//       cout << "Fhdsfdjh" << ActualTemperature <<endl;
+//       field1->set_label("temperature");
+//       field1->set_value(ActualTemperature);
 
 
-      packet.set_board_id(123);
+//       packet.set_board_id(123);
       
-      // Set timestamp
-    google::protobuf::Timestamp* timestamp = packet.mutable_time_data_read();
-    timestamp->set_seconds(time(NULL));  // Set the timestamp to current time in seconds
+//       // Set timestamp
+//     google::protobuf::Timestamp* timestamp = packet.mutable_time_data_read();
+//     timestamp->set_seconds(time(NULL));  // Set the timestamp to current time in seconds
 
 
 
 
-      // Set protocol
-      packet.set_protocol(Packet::CAN);
+//       // Set protocol
+//       packet.set_protocol(Packet::CAN);
 
-      // Set original message
-      packet.set_original_message("\xDE\xAD\xBE\xEF", 4);
+//       // Set original message
+//       packet.set_original_message("\xDE\xAD\xBE\xEF", 4);
 
-      // Set digital signature
-      packet.set_digital_signature(9876543210);
+//       // Set digital signature
+//       packet.set_digital_signature(9876543210);
 
-      // Print the packet
-      //printPacket(packet);
-	std::string string_data;
-      packet.SerializeToString(&string_data);
-	cout << string_data << endl;
+//       // Print the packet
+//       //printPacket(packet);
+ 	std::string string_data;
+       packet.SerializeToString(&string_data);
+// 	cout << string_data << endl;
 
-      Packet p2;
-      p2.ParseFromString(string_data);
-printPacket(p2);
+       capstone_protobuf::Packet p2;
+       p2.ParseFromString(string_data);
+ printPacket(p2);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -163,42 +190,53 @@ void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
   }
 }
 
-// Function to print the Packet message in a readable format
-void printPacket(const Packet& packet) {
+void printPacket(const capstone_protobuf::Packet& packet) {
     cout << "Packet Message:" << endl;
-    cout << "  Board ID: " << packet.board_id() << endl;
+    cout << "  Board ID: " << packet.board_id_msg_origin() << endl;
+    cout << "  Nonce: " << packet.nonce() << endl;
+    cout << "  Time Received: " << packet.time_received() << endl;
+    cout << "  Time Sent: " << packet.time_sent() << endl;
 
-    // Convert timestamp to a human-readable string
-    cout << "  Time Data Read: " << TimeUtil::ToString(packet.time_data_read()) << endl;
+    // Check if payload exists
+    if (packet.has_payload()) {
+        cout << "  Payload:" << endl;
 
-    // Print Data fields
-    if (packet.has_data()) {
-        cout << "  Data:" << endl;
-        cout << "    Type: " << packet.data().type() << endl;
-        cout << "    Fields:" << endl;
-        for (const auto& field : packet.data().double_fields()) {
-            cout << "      - " << field.label() << ": " << field.value() << endl;
+        // Convert timestamp to a human-readable string
+        cout << "    Time Data Captured: " 
+             << google::protobuf::util::TimeUtil::ToString(packet.payload().time_data_captured()) << endl;
+
+        // Print Data fields
+        if (packet.payload().has_data()) {
+            cout << "    Data:" << endl;
+            cout << "      Label: " << packet.payload().data().label() << endl;
+            cout << "      Fields:" << endl;
+
+            for (const auto& field : packet.payload().data().data()) {
+                cout << "        - " << field.DebugString() << endl;
+            }
         }
-    }
 
-    // Print protocol
-    cout << "  Protocol: ";
-    switch (packet.protocol()) {
-        case Packet::CAN: cout << "CAN"; break;
-        case Packet::Modbus: cout << "Modbus"; break;
-        default: cout << "Unknown";
-    }
-    cout << endl;
+        // Print protocol
+        cout << "    Protocol: ";
+        switch (packet.payload().protocol()) {
+            case capstone_protobuf::Packet::Payload::CAN: cout << "CAN"; break;
+            case capstone_protobuf::Packet::Payload::Modbus: cout << "Modbus"; break;
+            default: cout << "Unknown";
+        }
+        cout << endl;
 
-    // Print original message as hex
-    cout << "  Original Message: ";
-    for (unsigned char c : packet.original_message()) {
-        printf("%02X ", c);
-    }
-    cout << endl;
+        // Print original message as hex
+        cout << "    Original Message: ";
+        for (unsigned char c : packet.payload().original_message()) {
+            printf("%02X ", c);
+        }
+        cout << endl;
 
-    // Print digital signature
-    cout << "  Digital Signature: " << packet.digital_signature() << endl;
+        // Print digital signature
+        cout << "    Digital Signature: " << packet.payload().digital_signature() << endl;
+    } else {
+        cout << "  No Payload Data." << endl;
+    }
 }
 
 
