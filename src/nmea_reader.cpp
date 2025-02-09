@@ -20,8 +20,10 @@ std::vector<int> PGNS;
 
 void Temperature(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg);
+void OutsideEnvironmental2(const tN2kMsg &N2kMsg);
 void Humidity(const tN2kMsg &N2kMsg);
 void TemperatureExt(const tN2kMsg &N2kMsg);
+void VesselHeading(const tN2kMsg &N2kMsg);
 void printPacket(const capstone_protobuf::Packet& packet);
 
 template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* label, T val, double (*ConvFunc)(double val)=0, bool AddLf=false, int8_t Desim=-1 ) {
@@ -37,28 +39,172 @@ template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* labe
 }
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  //{130310L,&OutsideEnvironmental},
+  {130310L,&OutsideEnvironmental},
   {130312L,&Temperature},
-  //{130313L,&Humidity},
-  //{130316L,&TemperatureExt},
+  {130311L,&OutsideEnvironmental2},
+  {130316L,&VesselHeading},
   {0,0}
 };
 
 
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
+      google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+    timestamp->set_seconds(time(nullptr));
     unsigned char SID;
     double WaterTemperature;
     double OutsideAmbientAirTemperature;
     double AtmosphericPressure;
     
     if (ParseN2kOutsideEnvironmentalParameters(N2kMsg,SID,WaterTemperature,OutsideAmbientAirTemperature,AtmosphericPressure) ) {
-      PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
+      //PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
     }
+
+    capstone_protobuf::Packet packet;
+
+    // Set timestamp
+    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+    payload->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Pressure pressure_data;
+    pressure_data.set_pressure(AtmosphericPressure);
+    google::protobuf::Any any_data;
+    any_data.PackFrom(pressure_data);
+    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
+    data->set_label("pressure");
+    data->add_data()->PackFrom(pressure_data);
+
+    // Fill out payload
+    payload->set_allocated_data(data);
+    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload->set_original_message("Outside Env 310");
+    payload->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload);
+std::string string_data;
+       packet.SerializeToString(&string_data);
+       printPacket(packet);
+
+// TEMP
+    capstone_protobuf::Packet::Payload *payload2 = new capstone_protobuf::Packet::Payload();
+    payload2->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Temperature temp_data;
+    temp_data.set_temperature(OutsideAmbientAirTemperature);
+    //google::protobuf::Any any_data;
+    any_data.PackFrom(temp_data);
+    capstone_protobuf::Packet::Payload::Data *data2 = new capstone_protobuf::Packet::Payload::Data();
+    data2->set_label("temperature");
+    data2->add_data()->PackFrom(temp_data);
+
+    // Fill out payload
+    payload2->set_allocated_data(data2);
+    payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload2->set_original_message("Outside Env 310");
+    payload2->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload2);
+       printPacket(packet);
+
+
+
+}
+void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
+      google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+    timestamp->set_seconds(time(nullptr));
+    unsigned char SID;
+    double WaterTemperature;
+    double OutsideAmbientAirTemperature;
+    double AtmosphericPressure;
+    tN2kHumiditySource HumiditySource;
+    double Humidity;
+    tN2kTempSource TempSource;
+    double Temperature;
+    
+    if (ParseN2kEnvironmentalParameters(N2kMsg,SID,TempSource,Temperature, HumiditySource,Humidity,AtmosphericPressure) ) {
+      //PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
+    } else {
+      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+    }
+
+    capstone_protobuf::Packet packet;
+
+    // Set timestamp
+    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+    payload->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Pressure pressure_data;
+    pressure_data.set_pressure(AtmosphericPressure);
+    google::protobuf::Any any_data;
+    any_data.PackFrom(pressure_data);
+    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
+    data->set_label("pressure");
+    data->add_data()->PackFrom(pressure_data);
+
+    // Fill out payload
+    payload->set_allocated_data(data);
+    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload->set_original_message("Env Params 311");
+    payload->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload);
+std::string string_data;
+       packet.SerializeToString(&string_data);
+       printPacket(packet);
+
+// TEMP
+    capstone_protobuf::Packet::Payload *payload2 = new capstone_protobuf::Packet::Payload();
+    payload2->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Temperature temp_data;
+    temp_data.set_temperature(Temperature);
+    //google::protobuf::Any any_data;
+    any_data.PackFrom(temp_data);
+    capstone_protobuf::Packet::Payload::Data *data2 = new capstone_protobuf::Packet::Payload::Data();
+    data2->set_label("temperature");
+    data2->add_data()->PackFrom(temp_data);
+
+    // Fill out payload
+    payload2->set_allocated_data(data2);
+    payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload2->set_original_message("Env Params 311");
+    payload2->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload2);
+       printPacket(packet);
+
+// Pressure
+    capstone_protobuf::Packet::Payload *payload3 = new capstone_protobuf::Packet::Payload();
+    payload3->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Humidity humidity_data;
+    humidity_data.set_humidity(Humidity);
+    //google::protobuf::Any any_data;
+    any_data.PackFrom(humidity_data);
+    capstone_protobuf::Packet::Payload::Data *data3 = new capstone_protobuf::Packet::Payload::Data();
+    data3->set_label("humidity");
+    data3->add_data()->PackFrom(humidity_data);
+
+    // Fill out payload
+    payload3->set_allocated_data(data3);
+    payload3->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload3->set_original_message("Env Params 311");
+    payload3->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload3);
+       printPacket(packet);
+
 }
 //*****************************************************************************
 void Temperature(const tN2kMsg &N2kMsg) {
@@ -97,48 +243,79 @@ void Temperature(const tN2kMsg &N2kMsg) {
     // Fill out payload
     payload->set_allocated_data(data);
     payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
-    payload->set_original_message("Raw temperature data");
+    payload->set_original_message("1300312");
     payload->set_digital_signature("12345");
 
     packet.set_allocated_payload(payload);
 
-      // capstone_protobuf::Packet_Payload* data = packet.mutable_data();
-
-//       data->set_type("temperature");
-
-//       Packet_DataField* field1 = data->add_double_fields();
-//       cout << "Fhdsfdjh" << ActualTemperature <<endl;
-//       field1->set_label("temperature");
-//       field1->set_value(ActualTemperature);
-
-
-//       packet.set_board_id(123);
-      
-//       // Set timestamp
-//     google::protobuf::Timestamp* timestamp = packet.mutable_time_data_read();
-//     timestamp->set_seconds(time(NULL));  // Set the timestamp to current time in seconds
-
-
-
-
-//       // Set protocol
-//       packet.set_protocol(Packet::CAN);
-
-//       // Set original message
-//       packet.set_original_message("\xDE\xAD\xBE\xEF", 4);
-
-//       // Set digital signature
-//       packet.set_digital_signature(9876543210);
-
-//       // Print the packet
-//       //printPacket(packet);
  	std::string string_data;
        packet.SerializeToString(&string_data);
 // 	cout << string_data << endl;
 
        capstone_protobuf::Packet p2;
        p2.ParseFromString(string_data);
- //printPacket(p2);
+ printPacket(p2);
+
+    } else {
+      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+    }
+
+
+}
+void VesselHeading(const tN2kMsg &N2kMsg) {
+    // get time captured data
+    google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+    timestamp->set_seconds(time(nullptr));
+
+    unsigned char SID;
+    unsigned char TempInstance;
+    tN2kTempSource TempSource;
+    double ActualTemperature;
+    double SetTemperature;
+    double Heading;
+    double Deviation;
+    double Variation;
+    tN2kHeadingReference ref;
+    
+    
+    if (ParseN2kHeading(N2kMsg,SID,Heading,Deviation,Variation,ref) ) {
+                        //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
+      //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
+      //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
+
+    capstone_protobuf::Packet packet;
+
+    // Set timestamp
+    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+    payload->set_allocated_time_data_captured(timestamp);
+
+    // Set data
+    capstone_protobuf::Heading heading_data;
+    heading_data.set_heading(Heading);
+    heading_data.set_deviation(Deviation);
+    heading_data.set_variation(Variation);
+
+    google::protobuf::Any any_data;
+    any_data.PackFrom(heading_data);
+    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
+    data->set_label("heading");
+    data->add_data()->PackFrom(heading_data);
+
+    // Fill out payload
+    payload->set_allocated_data(data);
+    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload->set_original_message("Vessel Heading");
+    payload->set_digital_signature("12345");
+
+    packet.set_allocated_payload(payload);
+
+ 	std::string string_data;
+       packet.SerializeToString(&string_data);
+// 	cout << string_data << endl;
+
+       capstone_protobuf::Packet p2;
+       p2.ParseFromString(string_data);
+ printPacket(p2);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -148,36 +325,8 @@ void Temperature(const tN2kMsg &N2kMsg) {
 }
 
 //*****************************************************************************
-void Humidity(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    unsigned char Instance;
-    tN2kHumiditySource HumiditySource;
-    double ActualHumidity,SetHumidity;
-    
-    if ( ParseN2kHumidity(N2kMsg,SID,Instance,HumiditySource,ActualHumidity,SetHumidity) ) {
-                       // serStream.print("Humidity source: "); PrintN2kEnumType(HumiditySource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", humidity: ",ActualHumidity,0,false);
-      PrintLabelValWithConversionCheckUnDef(", set humidity: ",SetHumidity,0,true);
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
-}
 
-void TemperatureExt(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    unsigned char TempInstance;
-    tN2kTempSource TempSource;
-    double ActualTemperature;
-    double SetTemperature;
-    
-    if (ParseN2kTemperatureExt(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
-                      //  serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
-}
+
 
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
   int iHandler;

@@ -53,6 +53,11 @@ message Humidity
   int32 humidity = 1;
 }
 
+message Pressure
+{
+  int32 pressure = 1;
+}
+
 message GPS
 {
   int64 latitude = 1;
@@ -60,4 +65,10 @@ message GPS
   int64 altitude = 3;
 }
 
+message Heading
+{
+  double heading = 1;
+  double deviation = 2;
+  double variation = 3;
+}
 // [END messages]
