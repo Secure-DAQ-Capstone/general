@@ -137,55 +137,60 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
     }
 
+    // Create packet
     capstone_protobuf::Packet packet;
-
-    // Set timestamp
-    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-    payload->set_allocated_time_data_captured(timestamp);
-
-    // Set data
+    
+    // Create and set the first payload for pressure data
+    auto payload1 = std::make_unique<capstone_protobuf::Packet::Payload>();
+    payload1->set_allocated_time_data_captured(timestamp->release()); // Ownership transferred to payload1
+    
     capstone_protobuf::Pressure pressure_data;
     pressure_data.set_pressure(AtmosphericPressure);
     google::protobuf::Any any_data;
     any_data.PackFrom(pressure_data);
-    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
-    data->set_label("pressure");
-    data->add_data()->PackFrom(pressure_data);
+    
+    auto data1 = payload1->mutable_data();
+    data1->set_label("pressure");
+    data1->add_data()->PackFrom(pressure_data);
 
-    // Fill out payload
-    payload->set_allocated_data(data);
-    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
-    payload->set_original_message("Env Params 311");
-    payload->set_digital_signature("311");
+    // Set protocol and additional details
+    payload1->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload1->set_original_message("Env Params 311");
+    payload1->set_digital_signature("311");
 
-    packet.set_allocated_payload(payload);
-std::string string_data;
-       packet.SerializeToString(&string_data);
-       printPacket(packet);
+    packet.set_allocated_payload(payload1.release()); // Ownership transferred to packet
 
-// TEMP
-    capstone_protobuf::Packet::Payload *payload2 = new capstone_protobuf::Packet::Payload();
-    payload2->set_allocated_time_data_captured(timestamp);
+    // Optional: Print the packet if needed
+    std::string string_data;
+    packet.SerializeToString(&string_data);
+    printPacket(packet);
 
-    // Set data
+    // Create and set the second payload for temperature data
+    auto timestamp2 = std::make_unique<google::protobuf::Timestamp>();
+    timestamp2->set_seconds(time(nullptr)); // Set the new timestamp
+
+    auto payload2 = std::make_unique<capstone_protobuf::Packet::Payload>();
+    payload2->set_allocated_time_data_captured(timestamp2->release()); // Ownership transferred to payload2
+
     capstone_protobuf::Temperature temp_data;
     temp_data.set_temperature(Temperature);
-    //google::protobuf::Any any_data;
     any_data.PackFrom(temp_data);
-    capstone_protobuf::Packet::Payload::Data *data2 = new capstone_protobuf::Packet::Payload::Data();
+    
+    auto data2 = payload2->mutable_data();
     data2->set_label("temperature");
     data2->add_data()->PackFrom(temp_data);
 
-    // Fill out payload
-    payload2->set_allocated_data(data2);
+    // Set protocol and additional details
     payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload2->set_original_message("Env Params 311");
     payload2->set_digital_signature("311");
 
-    packet.set_allocated_payload(payload2);
-       printPacket(packet);
+    packet.set_allocated_payload(payload2.release()); // Ownership transferred to packet
 
-    cout << "END  OutsideEnvironmental2" << endl;
+    // Optional: Print the packet if needed
+    printPacket(packet);
+
+    cout << "END OutsideEnvironmental2" << endl;
 
 }
 //*****************************************************************************
