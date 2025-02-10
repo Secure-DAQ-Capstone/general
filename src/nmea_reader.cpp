@@ -314,7 +314,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
     data->add_data()->PackFrom(heading_data);
 
     // Fill out payload
-    payload->set_allocated_data(data);
+    //payload->set_allocated_data(data);
     payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
     payload->set_original_message("Vessel Heading");
     payload->set_digital_signature("12345");
@@ -333,7 +333,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
     //     return;  // Handle error
     // }
 
-    // printPacket(p2);
+   printPacket(packet);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
