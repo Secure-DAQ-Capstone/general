@@ -31,7 +31,7 @@ void udpSendString(std::string str)
   }
 
   // Write the string to the file
-  file << str;
+  file << str << std::endl;
 
   // Close the file
   file.close();
