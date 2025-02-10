@@ -15,12 +15,6 @@ std::string readAndDeleteFirstStringFromFile(const std::string& filename) {
     std::string first_line;
     std::getline(file, first_line);  // Read the first line (string)
 
-    // If the first line is empty, close the file and return an empty string
-    if (first_line.empty()) {
-        file.close();
-        return "";
-    }
-
     // Read the remaining lines and save them in a stringstream
     std::stringstream remaining_content;
     std::string line;
@@ -43,14 +37,13 @@ std::string readAndDeleteFirstStringFromFile(const std::string& filename) {
     return first_line;  // Return the first string
 }
 
-int main(void) {
-    while (1) {
-        std::string str = readAndDeleteFirstStringFromFile("str_msgs.txt");
+int main(void)
+{
+    //GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-        // Only print if the string is not empty
-        if (!str.empty()) {
-            std::cout << str << std::endl;
-        }
+
+     while(1) {
+        cout <<  readAndDeleteFirstStringFromFile("str_msgs.txt")      << endl;                                  // Will send out CAN messages in open text 
     }
     
     return 0;
