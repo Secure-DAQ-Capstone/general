@@ -10,7 +10,7 @@
 #include <google/protobuf/util/time_util.h>
 #include "udp_pub.h"
 #include <iomanip>
-
+#include <fstream> 
 void printPacket(const capstone_protobuf::Packet& packet);
 
 std::string encryptString(std::string str) //TODO
@@ -20,6 +20,22 @@ std::string encryptString(std::string str) //TODO
 
 void udpSendString(std::string str)
 {
+  std::string filename = "str_msgs.txt";
+  // Open the file in append mode
+  std::ofstream file(filename, std::ios::app);
+
+  // Check if the file opened successfully
+  if (!file.is_open()) {
+      std::cerr << "Failed to open file for appending: " << filename << std::endl;
+      return;
+  }
+
+  // Write the string to the file
+  file << str;
+
+  // Close the file
+  file.close();
+
   return;
 }
 // Implement these in their own libraries / classes / helpers and move to separate file
@@ -32,8 +48,6 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
 
   capstone_protobuf::EncryptedPacket encrypted_packet;
 
-  //capstone_protobuf::MetaData* metadata = packet.mutable_metadata();
-
   capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
 
   *metadata_copy = *packet.mutable_metadata();
@@ -41,7 +55,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
   encrypted_packet.set_allocated_metadata(metadata_copy);
   encrypted_packet.set_encrypted_payload(encrypted_payload);
 
-  return encrypted_packet; // TODO
+  return encrypted_packet; 
 }
 
 void udpSend(capstone_protobuf::Packet& packet)
@@ -60,7 +74,7 @@ void udpSend(capstone_protobuf::EncryptedPacket& packet)
   return;
 }
 
-std::string getDigitalSignature()
+std::string getDigitalSignature(capstone_protobuf::Packet& packet)
 {
     return "12345"; // TODO
 }
@@ -86,9 +100,11 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
   payload->set_protocol(capstone_protobuf::Packet::Payload::NMEA);
   payload->set_original_message_id(original_msg_id);
   payload->set_original_message(original_msg, static_cast<size_t>(msg_len));
-  payload->set_digital_signature(getDigitalSignature());
+  
 
   packet.set_allocated_payload(payload); // Ownership transferred to packet
+
+  payload->set_digital_signature(getDigitalSignature(packet));
 
   printPacket(packet);
 
