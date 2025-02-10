@@ -36,38 +36,38 @@ int main(void)
 
 
   while(1) {      
-    std::string msg = readAndDeleteFirstStringFromFile("str_msgs.txt", true);
+  //   std::string msg = readAndDeleteFirstStringFromFile("str_msgs.txt", true);
 
-      cout << "\n encrypted packet string: \n";
-  cout << msg << endl;
-  cout << "\n END string \n";
+  //     cout << "\n encrypted packet string: \n";
+  // cout << msg << endl;
+  // cout << "\n END string \n";
 
-    // capstone_protobuf::EncryptedPacket encrypted_packet;
+    capstone_protobuf::EncryptedPacket encrypted_packet;
 
-    // // Use ParseFromString to parse the string into the Protobuf message
-    // if (encrypted_packet.ParseFromString(msg)) {
-    //     //std::cout << "Successfully parsed string into Protobuf message!" << std::endl;
-    //     capstone_protobuf::Packet packet;
+    // Use ParseFromString to parse the string into the Protobuf message
+    if (encrypted_packet.ParseFromString(msg)) {
+        //std::cout << "Successfully parsed string into Protobuf message!" << std::endl;
+        capstone_protobuf::Packet packet;
 
-    //     std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
+        std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
 
-    //     capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+        capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
 
-    //     *metadata_copy = *encrypted_packet.mutable_metadata();
+        *metadata_copy = *encrypted_packet.mutable_metadata();
 
-    //     packet.set_allocated_metadata(metadata_copy);
+        packet.set_allocated_metadata(metadata_copy);
 
-    //     capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+        capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
 
-    //     payload->ParseFromString(payload_str);
+        payload->ParseFromString(payload_str);
 
-    //     packet.set_allocated_payload(payload);
+        packet.set_allocated_payload(payload);
 
-    //     //cout << packet.DebugString() << endl;
+        cout << packet.DebugString() << endl;
 
-    // } else {
-    //     std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
-    // }
+    } else {
+        std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+    }
 
 
 

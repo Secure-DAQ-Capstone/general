@@ -18,6 +18,11 @@ std::string encryptString(std::string str) //TODO
   return str;
 }
 
+std::string decryptString(std::string str)
+{
+  return str;
+}
+
 void udpSendString(std::string str)
 {
   std::string filename = "str_msgs.txt";
@@ -66,14 +71,35 @@ void udpSend(capstone_protobuf::Packet& packet)
   return;
 }
 
-void udpSend(capstone_protobuf::EncryptedPacket& packet)
+void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
 {
   std::string packet_str;
-  packet.SerializeToString(&packet_str);
-  cout << "\n encrypted packet string: \n";
-  cout << packet_str << endl;
-  cout << "\n END string \n";
+  encrypted_packet.SerializeToString(&packet_str);
   udpSendString(packet_str);
+
+    if (encrypted_packet.ParseFromString(packet_str)) {
+        //std::cout << "Successfully parsed string into Protobuf message!" << std::endl;
+        capstone_protobuf::Packet packet;
+
+        std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
+
+        capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+
+        *metadata_copy = *encrypted_packet.mutable_metadata();
+
+        packet.set_allocated_metadata(metadata_copy);
+
+        capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+
+        payload->ParseFromString(payload_str);
+
+        packet.set_allocated_payload(payload);
+
+        cout << packet.DebugString() << endl;
+
+    } else {
+        std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+    }
   return;
 }
 
