@@ -40,11 +40,6 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
   payload->set_allocated_time_data_captured(timestamp);
   
-  //capstone_protobuf::Pressure pressure_data;
-  //pressure_data.set_pressure(AtmosphericPressure);
-  //google::protobuf::Any any_data;
-  //any_data.PackFrom(pressure_data);
-  
   capstone_protobuf::Packet::Payload::Data *data = payload->mutable_data();
   data->set_label(label);
   data->add_data()->PackFrom(sensor_data);
