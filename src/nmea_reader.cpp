@@ -35,9 +35,9 @@ template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* labe
 }
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  //{130310L,&OutsideEnvironmental},
+  {130310L,&OutsideEnvironmental},
   {130312L,&Temperature},
-  //{130311L,&OutsideEnvironmental2},
+  {130311L,&OutsideEnvironmental2},
   {127250L,&VesselHeading},
   {0,0}
 };
@@ -46,8 +46,10 @@ tNMEA2000Handler NMEA2000Handlers[]={
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
   cout << "  OutsideEnvironmental" << endl;
-      google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+    google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
+    google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
+    *timestamp2 = *timestamp;
     unsigned char SID;
     double WaterTemperature;
     double OutsideAmbientAirTemperature;
@@ -67,7 +69,7 @@ void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(OutsideAmbientAirTemperature);
-    generateAndSendPacket(timestamp, temperature_data, "temperature");
+    generateAndSendPacket(timestamp2, temperature_data, "temperature");
 
 cout << "END  OutsideEnvironmental" << endl;
 
@@ -77,6 +79,10 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
 
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
+    google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
+    *timestamp2 = *timestamp;
+    google::protobuf::Timestamp *timestamp3 = new google::protobuf::Timestamp();
+    *timestamp3 = *timestamp;
 
     unsigned char SID;
     double WaterTemperature;
@@ -101,11 +107,11 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(Temperature);
-    generateAndSendPacket(timestamp, temperature_data, "temperature");
+    generateAndSendPacket(timestamp2, temperature_data, "temperature");
 
     capstone_protobuf::Humidity humidity_data;
     humidity_data.set_humidity(Humidity);
-    generateAndSendPacket(timestamp, humidity_data, "humidity");
+    generateAndSendPacket(timestamp3, humidity_data, "humidity");
 
     cout << "END OutsideEnvironmental2" << endl;;
 
