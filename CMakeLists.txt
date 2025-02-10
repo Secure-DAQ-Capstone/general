@@ -29,6 +29,9 @@ add_library(libudp_sub
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
+# Define the main executable
+add_executable(packet_deserializer src/packet_deserializer.cpp)
+
 # Link libraries
 target_link_libraries(nmea_reader
     PRIVATE nmea2000
