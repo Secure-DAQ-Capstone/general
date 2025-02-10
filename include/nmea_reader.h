@@ -32,9 +32,13 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
 
   capstone_protobuf::EncryptedPacket encrypted_packet;
 
-  capstone_protobuf::MetaData* metadata = packet.mutable_metadata();
+  //capstone_protobuf::MetaData* metadata = packet.mutable_metadata();
 
-  encrypted_packet.set_allocated_metadata(metadata);
+  capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+
+  *metadata_copy = *packet.mutable_metadata();
+
+  encrypted_packet.set_allocated_metadata(metadata_copy);
   encrypted_packet.set_encrypted_payload(encrypted_payload);
 
   return encrypted_packet; // TODO
