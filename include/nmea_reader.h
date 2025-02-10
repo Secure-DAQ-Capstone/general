@@ -11,8 +11,19 @@
 #include "udp_pub.h"
 #include <iomanip>
 #include <fstream> 
-void printPacket(const capstone_protobuf::Packet& packet);
 
+using namespace std;
+using google::protobuf::util::TimeUtil;
+
+typedef struct {
+  unsigned long PGN;
+  void (*Handler)(const tN2kMsg &N2kMsg); 
+} tNMEA2000Handler;
+
+tSocketStream serStream; 
+std::vector<int> PGNS;
+
+// TODO - Temporary Implementations **********************************************************************
 std::string encryptString(std::string str) //TODO
 {
   return str;
@@ -23,83 +34,19 @@ std::string decryptString(std::string str)
   return str;
 }
 
-void udpSendString(std::string str)
+void udpSendString(std::string str) 
 {
   std::string filename = "str_msgs.txt";
-  // Open the file in append mode
   std::ofstream file(filename, std::ios::app);
 
-  // Check if the file opened successfully
   if (!file.is_open()) {
       std::cerr << "Failed to open file for appending: " << filename << std::endl;
       return;
   }
 
-  // Write the string to the file
   file << str << std::endl;
 
-  // Close the file
   file.close();
-
-  return;
-}
-// Implement these in their own libraries / classes / helpers and move to separate file
-capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& packet)
-{
-  std::string str_payload;
-  packet.payload().SerializeToString(&str_payload);
-
-  std::string encrypted_payload = encryptString(str_payload);  // TODO
-
-  capstone_protobuf::EncryptedPacket encrypted_packet;
-
-  capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
-
-  *metadata_copy = *packet.mutable_metadata();
-
-  encrypted_packet.set_allocated_metadata(metadata_copy);
-  encrypted_packet.set_encrypted_payload(encrypted_payload);
-
-  return encrypted_packet; 
-}
-
-void udpSend(capstone_protobuf::Packet& packet)
-{
-  std::string packet_str;
-  packet.SerializeToString(&packet_str);
-  udpSendString(packet_str);
-  return;
-}
-
-void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
-{
-  std::string packet_str;
-  encrypted_packet.SerializeToString(&packet_str);
-  udpSendString(packet_str);
-
-    if (encrypted_packet.ParseFromString(packet_str)) {
-        //std::cout << "Successfully parsed string into Protobuf message!" << std::endl;
-        capstone_protobuf::Packet packet;
-
-        std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
-
-        capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
-
-        *metadata_copy = *encrypted_packet.mutable_metadata();
-
-        packet.set_allocated_metadata(metadata_copy);
-
-        capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-
-        payload->ParseFromString(payload_str);
-
-        packet.set_allocated_payload(payload);
-
-        cout << packet.DebugString() << endl;
-
-    } else {
-        std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
-    }
   return;
 }
 
@@ -107,6 +54,19 @@ std::string getDigitalSignature(capstone_protobuf::Packet& packet)
 {
     return "12345"; // TODO
 }
+//********************************************************************************************* */
+
+void Temperature(const tN2kMsg &N2kMsg);
+void OutsideEnvironmental(const tN2kMsg &N2kMsg);
+void OutsideEnvironmental2(const tN2kMsg &N2kMsg);
+void VesselHeading(const tN2kMsg &N2kMsg);
+void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
+capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& packet);
+void udpSend(capstone_protobuf::Packet& packet);
+void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet);
+
+
+// Template Function Implementations ********************************************************************
 
 template <typename T>
 capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp, const T& sensor_data, std::string label, int original_msg_id, const void* original_msg, int msg_len)
@@ -135,8 +95,6 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
 
   payload->set_digital_signature(getDigitalSignature(packet));
 
-  printPacket(packet);
-
   return packet;
 }
 
@@ -156,6 +114,19 @@ void generateAndSendNMEAPacket(google::protobuf::Timestamp *timestamp, T& sensor
   int msg_len = static_cast<size_t>(NMEA_msg.DataLen);
   generateAndSendPacket(timestamp, sensor_data, label, msg_id, static_cast<const void*>(dataPtr), msg_len);
 }
+
+template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* label, T val, double (*ConvFunc)(double val)=0, bool AddLf=false, int8_t Desim=-1 ) {
+  serStream.print(label);
+  if (!N2kIsNA(val)) {
+    if ( Desim<0 ) {
+      if (ConvFunc) { serStream.print(ConvFunc(val)); } else { serStream.print(val); }
+    } else {
+      if (ConvFunc) { serStream.print(ConvFunc(val),Desim); } else { serStream.print(val,Desim); }
+    }
+  } else serStream.print("not available");
+  if (AddLf) serStream.println();
+}
+
 
 
 #endif
