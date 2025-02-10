@@ -70,6 +70,9 @@ void udpSend(capstone_protobuf::EncryptedPacket& packet)
 {
   std::string packet_str;
   packet.SerializeToString(&packet_str);
+  cout << "\n encrypted packet string: \n";
+  cout << packet_str << endl;
+  cout << "\n END string \n";
   udpSendString(packet_str);
   return;
 }

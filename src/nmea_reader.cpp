@@ -55,7 +55,7 @@ tNMEA2000Handler NMEA2000Handlers[]={
 
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
-  cout << "  OutsideEnvironmental" << endl;
+  //cout << "  OutsideEnvironmental" << endl;
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
     google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
@@ -80,11 +80,11 @@ void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(OutsideAmbientAirTemperature);
     generateAndSendNMEAPacket(timestamp2, temperature_data, "temperature", N2kMsg);
-cout << "END  OutsideEnvironmental" << endl;
+//cout << "END  OutsideEnvironmental" << endl;
 
 }
 void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
-    cout << "  OutsideEnvironmental2" << endl;
+    //cout << "  OutsideEnvironmental2" << endl;
 
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
@@ -122,12 +122,12 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
     humidity_data.set_humidity(Humidity);
     generateAndSendNMEAPacket(timestamp3, humidity_data, "humidity", N2kMsg);
 
-    cout << "END OutsideEnvironmental2" << endl;;
+    //cout << "END OutsideEnvironmental2" << endl;;
 
 }
 //*****************************************************************************
 void Temperature(const tN2kMsg &N2kMsg) {
-  cout << "  Temperature" << endl;
+  //cout << "  Temperature" << endl;
     // get time captured data
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
@@ -156,7 +156,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
 }
 void VesselHeading(const tN2kMsg &N2kMsg) {
-  cout << "VEsselHeading" << endl;
+  //cout << "VEsselHeading" << endl;
     // get time captured data
     google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
     timestamp->set_seconds(time(nullptr));
@@ -173,7 +173,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
       //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
-    printData(N2kMsg.Data, 223); 
+    //ata(N2kMsg.Data, 223); 
     capstone_protobuf::Heading heading_data;
     heading_data.set_heading(Heading);
     heading_data.set_deviation(Deviation);
@@ -223,7 +223,7 @@ void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
 }
 
 void printPacket(const capstone_protobuf::Packet& packet) {
-  cout << packet.DebugString() << endl;
+  //cout << packet.DebugString() << endl;
     // cout << "Packet Message:" << endl;
     // cout << "  Board ID: " << packet.board_id_msg_origin() << endl;
     // cout << "  Nonce: " << packet.nonce() << endl;
