@@ -28,7 +28,7 @@ std::string getDigitalSignature()
 }
 
 template <typename T>
-capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp, const T& sensor_data, std::string label)
+capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp, const T& sensor_data, std::string label, int original_msg_id, const void* original_msg, int msg_len)
 {
   capstone_protobuf::Packet packet;
   
@@ -45,8 +45,9 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
   data->add_data()->PackFrom(sensor_data);
 
   // Set protocol and additional details
-  payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
-  payload->set_original_message("Env Params 311");
+  payload->set_protocol(capstone_protobuf::Packet::Payload::NMEA);
+  payload->set_original_message_id(original_msg_id);
+  payload->set_original_message(original_msg, static_cast<size_t>(msg_len));
   payload->set_digital_signature(getDigitalSignature());
 
   packet.set_allocated_payload(payload); // Ownership transferred to packet
@@ -57,11 +58,20 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
 }
 
 template <typename T>
-void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T& sensor_data, std::string label)
+void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T& sensor_data, std::string label, int original_msg_id, const void* original_msg, int msg_len)
 {
-  capstone_protobuf::Packet packet = generatePacket(timestamp, sensor_data, label);
+  capstone_protobuf::Packet packet = generatePacket(timestamp, sensor_data, label, original_msg_id, original_msg, msg_len);
   encryptPayload(packet);
   udpSend(packet);
+}
+
+template <typename T>
+void generateAndSendNMEAPacket(google::protobuf::Timestamp *timestamp, T& sensor_data, std::string label, const tN2kMsg& NMEA_msg)
+{
+  int msg_id = static_cast<int>(NMEA_msg.PGN);
+  const unsigned char (*dataPtr)[223] = &NMEA_msg.Data;
+  int msg_len = static_cast<size_t>(NMEA_msg.DataLen);
+  generateAndSendPacket(timestamp, sensor_data, label, msg_id, static_cast<const void*>(dataPtr), msg_len);
 }
 
 

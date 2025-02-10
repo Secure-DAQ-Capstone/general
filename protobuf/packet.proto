@@ -26,7 +26,8 @@ message Packet {
     Data data = 2;
     OriginalProtocol protocol = 3;
     bytes original_message = 4;
-    bytes digital_signature = 5;
+    int64 original_message_id = 5;
+    bytes digital_signature = 6;
 
     message Data {
       string label = 1;
@@ -34,7 +35,7 @@ message Packet {
     }
 
     enum OriginalProtocol {
-      CAN = 0;
+      NMEA = 0;
       Modbus = 1;
     }
   }

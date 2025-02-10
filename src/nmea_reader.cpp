@@ -75,12 +75,11 @@ void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
 
     capstone_protobuf::Pressure pressure_data;
     pressure_data.set_pressure(AtmosphericPressure);
-    generateAndSendPacket(timestamp, pressure_data, "pressure");
+    generateAndSendNMEAPacket(timestamp, pressure_data, "pressure", N2kMsg);
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(OutsideAmbientAirTemperature);
-    generateAndSendPacket(timestamp2, temperature_data, "temperature");
-
+    generateAndSendNMEAPacket(timestamp2, temperature_data, "temperature", N2kMsg);
 cout << "END  OutsideEnvironmental" << endl;
 
 }
@@ -113,15 +112,15 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
     
     capstone_protobuf::Pressure pressure_data;
     pressure_data.set_pressure(AtmosphericPressure);
-    generateAndSendPacket(timestamp, pressure_data, "pressure");
+    generateAndSendNMEAPacket(timestamp, pressure_data, "pressure", N2kMsg);
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(Temperature);
-    generateAndSendPacket(timestamp2, temperature_data, "temperature");
+    generateAndSendNMEAPacket(timestamp2, temperature_data, "temperature", N2kMsg);
 
     capstone_protobuf::Humidity humidity_data;
     humidity_data.set_humidity(Humidity);
-    generateAndSendPacket(timestamp3, humidity_data, "humidity");
+    generateAndSendNMEAPacket(timestamp3, humidity_data, "humidity", N2kMsg);
 
     cout << "END OutsideEnvironmental2" << endl;;
 
@@ -148,7 +147,7 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(ActualTemperature);
-    generateAndSendPacket(timestamp, temperature_data, "temperature");
+    generateAndSendNMEAPacket(timestamp, temperature_data, "temperature", N2kMsg);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -179,7 +178,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
     heading_data.set_heading(Heading);
     heading_data.set_deviation(Deviation);
     heading_data.set_variation(Variation);
-    generateAndSendPacket(timestamp, heading_data, "heading");
+    generateAndSendNMEAPacket(timestamp, heading_data, "heading", N2kMsg);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
