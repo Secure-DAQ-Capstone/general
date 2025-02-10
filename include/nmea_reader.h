@@ -13,15 +13,49 @@
 
 void printPacket(const capstone_protobuf::Packet& packet);
 
-// Implement these in their own libraries / classes / helpers and move to separate file
-void encryptPayload(capstone_protobuf::Packet& packet)
+std::string encryptString(std::string str) //TODO
 {
-  return; // TODO
+  return str;
 }
+
+void udpSendString(std::string str)
+{
+  return;
+}
+// Implement these in their own libraries / classes / helpers and move to separate file
+capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& packet)
+{
+  std::string str_payload;
+  packet.payload().SerializeToString(&str_payload);
+
+  std::string encrypted_payload = encryptString(str_payload);  // TODO
+
+  capstone_protobuf::EncryptedPacket encrypted_packet;
+
+  capstone_protobuf::MetaData* metadata = packet.mutable_metadata();
+
+  encrypted_packet.set_allocated_metadata(metadata);
+  encrypted_packet.set_encrypted_payload(encrypted_payload);
+
+  return encrypted_packet; // TODO
+}
+
 void udpSend(capstone_protobuf::Packet& packet)
 {
-  return; // TODO
+  std::string packet_str;
+  packet.SerializeToString(&packet_str);
+  udpSendString(packet_str);
+  return;
 }
+
+void udpSend(capstone_protobuf::EncryptedPacket& packet)
+{
+  std::string packet_str;
+  packet.SerializeToString(&packet_str);
+  udpSendString(packet_str);
+  return;
+}
+
 std::string getDigitalSignature()
 {
     return "12345"; // TODO
@@ -61,8 +95,8 @@ template <typename T>
 void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T& sensor_data, std::string label, int original_msg_id, const void* original_msg, int msg_len)
 {
   capstone_protobuf::Packet packet = generatePacket(timestamp, sensor_data, label, original_msg_id, original_msg, msg_len);
-  encryptPayload(packet);
-  udpSend(packet);
+  capstone_protobuf::EncryptedPacket encrypted_packet = encryptPayload(packet);
+  udpSend(encrypted_packet);
 }
 
 template <typename T>
