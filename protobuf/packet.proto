@@ -16,12 +16,10 @@ import "google/protobuf/any.proto";
 
 // [START messages]
 message Packet {
-  int32 board_id_msg_origin = 1;
-  int32 nonce = 2;
-  int32 time_received = 3;
-  int32 time_sent = 4;
 
-  Payload payload = 5;
+  MetaData metadata = 1;
+
+  Payload payload = 2;
 
   message Payload{
     google.protobuf.Timestamp time_data_captured = 1;
@@ -41,6 +39,21 @@ message Packet {
     }
   }
 
+}
+
+message MetaData
+{
+  int32 board_id_msg_origin = 1;
+  int32 nonce = 2;
+  int32 time_received = 3;
+  int32 time_sent = 4;
+}
+
+
+message EncryptedPacket {
+  MetaData metadata = 1;
+
+  bytes encrypted_payload = 2;
 }
 
 message Temperature
