@@ -39,9 +39,9 @@ template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* labe
 
 tNMEA2000Handler NMEA2000Handlers[]={
   {130310L,&OutsideEnvironmental},
-  //{130312L,&Temperature},
+  {130312L,&Temperature},
   {130311L,&OutsideEnvironmental2},
-  //{130316L,&VesselHeading},
+  {127250L,&VesselHeading},
   {0,0}
 };
 
@@ -245,34 +245,31 @@ void Temperature(const tN2kMsg &N2kMsg) {
 
     capstone_protobuf::Packet packet;
 
-    // Set timestamp
-    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-    payload->set_allocated_time_data_captured(timestamp);
+    // Create and set the second payload for temperature data
+    google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
+    timestamp2->set_seconds(time(nullptr)); // Set the new timestamp
 
-    // Set data
+    capstone_protobuf::Packet::Payload *payload2 = new capstone_protobuf::Packet::Payload();
+    payload2->set_allocated_time_data_captured(timestamp2); // Use the pointer directly
+
     capstone_protobuf::Temperature temp_data;
     temp_data.set_temperature(ActualTemperature);
     google::protobuf::Any any_data;
     any_data.PackFrom(temp_data);
-    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
-    data->set_label("temperature");
-    data->add_data()->PackFrom(temp_data);
+    
+    capstone_protobuf::Packet::Payload::Data *data2 = payload2->mutable_data();
+    data2->set_label("temperature");
+    data2->add_data()->PackFrom(temp_data);
 
-    // Fill out payload
-    payload->set_allocated_data(data);
-    payload->set_protocol(capstone_protobuf::Packet::Payload::CAN);
-    payload->set_original_message("1300312");
-    payload->set_digital_signature("12345");
+    // Set protocol and additional details
+    payload2->set_protocol(capstone_protobuf::Packet::Payload::CAN);
+    payload2->set_original_message("Env Params 311");
+    payload2->set_digital_signature("311");
 
-    packet.set_allocated_payload(payload);
+    packet.set_allocated_payload(payload2); // Ownership transferred to packet
 
- 	std::string string_data;
-       packet.SerializeToString(&string_data);
-// 	cout << string_data << endl;
-
-       capstone_protobuf::Packet p2;
-       p2.ParseFromString(string_data);
- printPacket(p2);
+    // Optional: Print the packet if needed
+    printPacket(packet);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
@@ -316,7 +313,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
 
     google::protobuf::Any any_data;
     any_data.PackFrom(heading_data);
-    capstone_protobuf::Packet::Payload::Data *data = new capstone_protobuf::Packet::Payload::Data();
+    capstone_protobuf::Packet::Payload::Data *data = payload->mutable_data();
     data->set_label("heading");
     data->add_data()->PackFrom(heading_data);
 
