@@ -9,22 +9,22 @@
 #include "packet.pb.h"
 #include <google/protobuf/util/time_util.h>
 #include "udp_pub.h"
+#include <iomanip>
 
-std::string getDigitalSignature()
-{
-    return "12345";
-}
 void printPacket(const capstone_protobuf::Packet& packet);
+
 // Implement these in their own libraries / classes / helpers and move to separate file
-void encryptPacket(capstone_protobuf::Packet& packet); // TODO
-void udpSend(capstone_protobuf::Packet& packet); // TODO
 void encryptPayload(capstone_protobuf::Packet& packet)
 {
-  return;
+  return; // TODO
 }
 void udpSend(capstone_protobuf::Packet& packet)
 {
-  return;
+  return; // TODO
+}
+std::string getDigitalSignature()
+{
+    return "12345"; // TODO
 }
 
 template <typename T>

@@ -18,7 +18,17 @@ void OutsideEnvironmental2(const tN2kMsg &N2kMsg);
 void VesselHeading(const tN2kMsg &N2kMsg);
 
 
-
+void printData(const unsigned char* data, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        // Print each byte in hexadecimal format
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
+        // Print a newline after every 16 bytes (for readability)
+        if ((i + 1) % 16 == 0) {
+            std::cout << std::endl;
+        }
+    }
+    std::cout << std::dec << std::endl;  // Switch back to decimal formatting
+}
 
 
 
@@ -164,6 +174,7 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
       //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
       //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
+    printData(N2kMsg.Data, 223); 
     capstone_protobuf::Heading heading_data;
     heading_data.set_heading(Heading);
     heading_data.set_deviation(Deviation);
