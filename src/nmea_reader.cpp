@@ -284,10 +284,6 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
     timestamp->set_seconds(time(nullptr));
 
     unsigned char SID;
-    unsigned char TempInstance;
-    tN2kTempSource TempSource;
-    double ActualTemperature;
-    double SetTemperature;
     double Heading;
     double Deviation;
     double Variation;
@@ -325,13 +321,19 @@ void VesselHeading(const tN2kMsg &N2kMsg) {
 
     packet.set_allocated_payload(payload);
 
- 	std::string string_data;
-       packet.SerializeToString(&string_data);
-// 	cout << string_data << endl;
+    // std::string string_data;
+    // if (!packet.SerializeToString(&string_data)) {
+    //     cerr << "Failed to serialize packet." << endl;
+    //     return;  // Handle error
+    // }
 
-       capstone_protobuf::Packet p2;
-       p2.ParseFromString(string_data);
- printPacket(p2);
+    // capstone_protobuf::Packet p2;
+    // if (!p2.ParseFromString(string_data)) {
+    //     cerr << "Failed to parse packet." << endl;
+    //     return;  // Handle error
+    // }
+
+    // printPacket(p2);
 
     } else {
       serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
