@@ -12,7 +12,7 @@ class UDPPub
 public:
     UDPPub() = delete; // prevent usage of default constructor
 
-    UDPPub(size_t max_buffer_size, int port, in_addr_t address);
+    UDPPub(size_t max_buffer_size, int port, in_addr_t address, bool broadcast = false);
 
     void write(std::string message);
 
@@ -20,7 +20,7 @@ public:
 
 private:
     size_t max_buffer_size;
-    sockaddr_in server_addr;
+    sockaddr_in dest_addr;
     int socket_fd;
 
     std::string formatErrorMessage(const std::string &message) const
