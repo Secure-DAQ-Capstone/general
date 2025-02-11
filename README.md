@@ -49,6 +49,16 @@ cd build
 ./nmea_reader
 ```
 
+To run the sub or pub tests
+
+```bash
+# To run a publisher
+./udp_test pub 
+
+# To run a subscriber
+./upd_test sub
+```
+
 ## SSH key setup
 
 Follow the steps from [GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux).
