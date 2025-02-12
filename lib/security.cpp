@@ -63,7 +63,7 @@ void security_base::generateNonce(unsigned char * nonce)
     //TODO: Uncomment the randomized nonce
     //randombytes_buf(nonce, sizeof nonce);
     string nonce_string;
-    ifstream nonce_file("nonce_boards.txt");
+    ifstream nonce_file("../nonce_boards.txt");
     
     getline(nonce_file, nonce_string);
 

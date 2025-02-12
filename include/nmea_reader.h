@@ -38,10 +38,11 @@ encryption_data_t encryptString(std::string str)
   unsigned char nonce[crypto_secretbox_NONCEBYTES];
   //Generate the nonce
   symmetric_key_security_agent.generateNonce(nonce);
-
+  
   //Encrypt the data and turn it into a string
-  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char*)str.c_str(), str.length(), nonce);
-  string encrypted_str(encrypted.begin(), encrypted.end());
+  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char*)str.data(), str.length(), nonce);
+  
+  string encrypted_str((const char*)(encrypted.data()),  encrypted.size()); 
   string nonce_str(nonce, nonce + crypto_secretbox_NONCEBYTES);
 
   //Add the encrypted data and the nonce to the struct
