@@ -10,7 +10,7 @@ struct GraceHouse {
 };
 
 
-#define UDP_BUFFER_SIZE 250
+#define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080
 
 #endif // CONSTANTS_H

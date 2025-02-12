@@ -12,14 +12,20 @@ class UDPSub
 public:
     UDPSub() = delete; // prevent usage of default constructor
 
-    UDPSub(size_t max_buffer_size, int port, in_addr_t address);
+    UDPSub(size_t max_buffer_size, int port, const char* address, bool debug = false);
 
+    std::string readPretty();
+
+    // read data from the socket and return the string
     std::string read();
+
+
     ~UDPSub();
 
 private:
     size_t max_buffer_size;
     int socket_fd;
+    bool debug;
 
     std::string formatErrorMessage(const std::string &message) const
     {

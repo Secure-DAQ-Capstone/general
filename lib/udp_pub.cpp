@@ -48,6 +48,10 @@ UDPPub::UDPPub(size_t max_buffer_size, int port, const char* address, bool broad
 
 void UDPPub::write(std::string message, bool debug)
 {
+    /**
+     * The message is converted from a std::string to a c string. 
+     * the c_str() function returns a pointer to a null terminated char array.
+    */
     // Send the message to the server
     ssize_t sent_bytes = sendto(socket_fd, message.c_str(), message.size(), 0,
                                 (sockaddr *)&dest_addr, sizeof(dest_addr));

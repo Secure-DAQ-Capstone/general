@@ -1,9 +1,10 @@
 #include "udp_pub.h"
 #include "udp_sub.h"
+#include "constants.h"
 #include <iostream>
 #include <thread>
 
-void runSubscriber(size_t buffer_size, int port, in_addr_t address)
+void runSubscriber(size_t buffer_size, int port, const char* address)
 {
     try
     {
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
      */
     const char* sendto_address = "192.168.2.142"; //ventana2
     // const char* sub_local_address = "127.0.0.1";
-    in_addr_t sub_local_address = inet_addr("127.0.0.1"); // ventana1
+    const char* sub_local_address = GraceHouse::Ventana1; // ventana1
 
 
     std::string role = argv[1];
