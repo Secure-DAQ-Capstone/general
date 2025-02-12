@@ -182,11 +182,20 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
   return encrypted_packet; 
 }
 
+const bool UDP_DEBUG = true;
+UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GraceHouse::Ventana1, false, true);
+
+void udpSendString(std::string packet_str)
+{
+  bool debug = true;
+  pub.write(packet_str, debug);
+}
+
 void udpSend(capstone_protobuf::Packet& packet)
 {
   std::string packet_str;
   packet.SerializeToString(&packet_str);
-  udpSendStringToFile(packet_str);
+  udpSendString(packet_str);
   return;
 }
 
@@ -194,34 +203,28 @@ void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
 {
   std::string packet_str;
   encrypted_packet.SerializeToString(&packet_str);
-  udpSendStringToFile(packet_str);
+  udpSendString(packet_str);
 
   // Temp Derserializing Packet Example
-  if (encrypted_packet.ParseFromString(packet_str)) {
-    capstone_protobuf::Packet packet;
-    std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
-    capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
-    *metadata_copy = *encrypted_packet.mutable_metadata();
-    packet.set_allocated_metadata(metadata_copy);
-    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-    payload->ParseFromString(payload_str);
-    packet.set_allocated_payload(payload);
-    cout << packet.DebugString() << endl;
+  // if (encrypted_packet.ParseFromString(packet_str)) {
+  //   capstone_protobuf::Packet packet;
+  //   std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
+  //   capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+  //   *metadata_copy = *encrypted_packet.mutable_metadata();
+  //   packet.set_allocated_metadata(metadata_copy);
+  //   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+  //   payload->ParseFromString(payload_str);
+  //   packet.set_allocated_payload(payload);
+  //   cout << packet.DebugString() << endl;
 
-  } else {
-      std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
-  }
+  // } else {
+  //     std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+  // }
   return;
 }
 
 
-const bool UDP_DEBUG = true;
-UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GraceHouse::Ventana2, false, true);
 
-void udpSend(std::string& packet_str)
-{
-  pub.write(packet_str);
-}
 
 
 
