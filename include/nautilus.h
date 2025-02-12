@@ -7,15 +7,27 @@
 
 class Nautilus {
 public:
-    Nautilus(bool debug);
+    Nautilus(bool debug, bool debug_sub);
     void update();
 
-    capstone_protobuf::Packet get_proto_packet(std::string packet_str);
+    bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet& packet_output);
+
+    std::string decryptString(std::string str)
+    {
+    return str;
+    }
+
+
 
 private:
     const bool UDP_DEBUG = true;
     UDPSub sub;
     bool debug;
+
+    std::string formatErrorMessage(const std::string &message) const
+    {
+        return "UDPPub: " + message;
+    }
 };
 
 #endif // NAUTILUS_H
