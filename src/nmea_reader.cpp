@@ -1,207 +1,217 @@
-#include <cstdlib>
-#include <stdio.h>
-#include <iostream>
-#include "NMEA2000_CAN.h"
-#include <N2kMessages.h>
-#include "packet.pb.h"
-#include <google/protobuf/util/time_util.h>
-#include "udp_pub.h"
+#include "nmea_reader.h"
 //#include <N2kMessagesEnumToStr.h>
-using namespace std;
-using google::protobuf::util::TimeUtil;
-using namespace capstone_protobuf;
-typedef struct {
-  unsigned long PGN;
-  void (*Handler)(const tN2kMsg &N2kMsg); 
-} tNMEA2000Handler;
-
-tSocketStream serStream; 
-
-void Temperature(const tN2kMsg &N2kMsg);
-void OutsideEnvironmental(const tN2kMsg &N2kMsg);
-void Humidity(const tN2kMsg &N2kMsg);
-void TemperatureExt(const tN2kMsg &N2kMsg);
-void printPacket(const Packet& packet);
-
-template<typename T> void PrintLabelValWithConversionCheckUnDef(const char* label, T val, double (*ConvFunc)(double val)=0, bool AddLf=false, int8_t Desim=-1 ) {
-  serStream.print(label);
-  if (!N2kIsNA(val)) {
-    if ( Desim<0 ) {
-      if (ConvFunc) { serStream.print(ConvFunc(val)); } else { serStream.print(val); }
-    } else {
-      if (ConvFunc) { serStream.print(ConvFunc(val),Desim); } else { serStream.print(val,Desim); }
-    }
-  } else serStream.print("not available");
-  if (AddLf) serStream.println();
-}
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  //{130310L,&OutsideEnvironmental},
+  {130310L,&OutsideEnvironmental},
   {130312L,&Temperature},
-  //{130313L,&Humidity},
-  //{130316L,&TemperatureExt},
+  {130311L,&OutsideEnvironmental2},
+  {127250L,&VesselHeading},
   {0,0}
 };
 
-
-void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
+// Handlers************************************************************************************************
 void OutsideEnvironmental(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    double WaterTemperature;
-    double OutsideAmbientAirTemperature;
-    double AtmosphericPressure;
-    
-    if (ParseN2kOutsideEnvironmentalParameters(N2kMsg,SID,WaterTemperature,OutsideAmbientAirTemperature,AtmosphericPressure) ) {
-      PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
+  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+  timestamp->set_seconds(time(nullptr));
+  google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
+  *timestamp2 = *timestamp;
+  unsigned char SID;
+  double WaterTemperature;
+  double OutsideAmbientAirTemperature;
+  double AtmosphericPressure;
+  
+  if (ParseN2kOutsideEnvironmentalParameters(N2kMsg,SID,WaterTemperature,OutsideAmbientAirTemperature,AtmosphericPressure) ) {
+    //PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
+  } else {
+    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+
+  capstone_protobuf::Pressure pressure_data;
+  pressure_data.set_pressure(AtmosphericPressure);
+  generateAndSendNMEAPacket(timestamp, pressure_data, "pressure", N2kMsg);
+
+  capstone_protobuf::Temperature temperature_data;
+  temperature_data.set_temperature(OutsideAmbientAirTemperature);
+  generateAndSendNMEAPacket(timestamp2, temperature_data, "temperature", N2kMsg);
 }
-//*****************************************************************************
+
+void OutsideEnvironmental2(const tN2kMsg &N2kMsg) {
+  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+  timestamp->set_seconds(time(nullptr));
+  google::protobuf::Timestamp *timestamp2 = new google::protobuf::Timestamp();
+  *timestamp2 = *timestamp;
+  google::protobuf::Timestamp *timestamp3 = new google::protobuf::Timestamp();
+  *timestamp3 = *timestamp;
+
+  unsigned char SID;
+  double WaterTemperature;
+  double OutsideAmbientAirTemperature;
+  double AtmosphericPressure;
+  tN2kHumiditySource HumiditySource;
+  double Humidity;
+  tN2kTempSource TempSource;
+  double Temperature;
+  
+  if (ParseN2kEnvironmentalParameters(N2kMsg,SID,TempSource,Temperature, HumiditySource,Humidity,AtmosphericPressure) ) {
+    //PrintLabelValWithConversionCheckUnDef("Water temp: ",WaterTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", outside ambient temp: ",OutsideAmbientAirTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", pressure: ",AtmosphericPressure,0,true);
+  } else {
+    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  
+  capstone_protobuf::Pressure pressure_data;
+  pressure_data.set_pressure(AtmosphericPressure);
+  generateAndSendNMEAPacket(timestamp, pressure_data, "pressure", N2kMsg);
+
+  capstone_protobuf::Temperature temperature_data;
+  temperature_data.set_temperature(Temperature);
+  generateAndSendNMEAPacket(timestamp2, temperature_data, "temperature", N2kMsg);
+
+  capstone_protobuf::Humidity humidity_data;
+  humidity_data.set_humidity(Humidity);
+  generateAndSendNMEAPacket(timestamp3, humidity_data, "humidity", N2kMsg);
+}
+
 void Temperature(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    unsigned char TempInstance;
-    tN2kTempSource TempSource;
-    double ActualTemperature;
-    double SetTemperature;
 
-    Packet packet;
-    
-    if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
-                        //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
+  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+  timestamp->set_seconds(time(nullptr));
 
-      Packet_Data* data = packet.mutable_data();
+  unsigned char SID;
+  unsigned char TempInstance;
+  tN2kTempSource TempSource;
+  double ActualTemperature;
+  double SetTemperature;
 
-      data->set_type("temperature");
+  if (ParseN2kTemperature(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
+                      //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
+    //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
-      Packet_DataField* field1 = data->add_double_fields();
-      cout << "Fhdsfdjh" << ActualTemperature <<endl;
-      field1->set_label("temperature");
-      field1->set_value(ActualTemperature);
+  capstone_protobuf::Temperature temperature_data;
+  temperature_data.set_temperature(ActualTemperature);
+  generateAndSendNMEAPacket(timestamp, temperature_data, "temperature", N2kMsg);
 
+  } else {
+    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+}
 
-      packet.set_board_id(123);
-      
-      // Set timestamp
-    google::protobuf::Timestamp* timestamp = packet.mutable_time_data_read();
-    timestamp->set_seconds(time(NULL));  // Set the timestamp to current time in seconds
+void VesselHeading(const tN2kMsg &N2kMsg) {
+  google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
+  timestamp->set_seconds(time(nullptr));
 
+  unsigned char SID;
+  double Heading;
+  double Deviation;
+  double Variation;
+  tN2kHeadingReference ref;
+  
+  
+  if (ParseN2kHeading(N2kMsg,SID,Heading,Deviation,Variation,ref) ) {
+                      //serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
+    //PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
+    //PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
 
+  capstone_protobuf::Heading heading_data;
+  heading_data.set_heading(Heading);
+  heading_data.set_deviation(Deviation);
+  heading_data.set_variation(Variation);
+  generateAndSendNMEAPacket(timestamp, heading_data, "heading", N2kMsg);
 
-
-      // Set protocol
-      packet.set_protocol(Packet::CAN);
-
-      // Set original message
-      packet.set_original_message("\xDE\xAD\xBE\xEF", 4);
-
-      // Set digital signature
-      packet.set_digital_signature(9876543210);
-
-      // Print the packet
-      //printPacket(packet);
-	std::string string_data;
-      packet.SerializeToString(&string_data);
-	cout << string_data << endl;
-
-      Packet p2;
-      p2.ParseFromString(string_data);
-printPacket(p2);
-
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
-
-
+  } else {
+    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
 }
 
 //*****************************************************************************
-void Humidity(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    unsigned char Instance;
-    tN2kHumiditySource HumiditySource;
-    double ActualHumidity,SetHumidity;
-    
-    if ( ParseN2kHumidity(N2kMsg,SID,Instance,HumiditySource,ActualHumidity,SetHumidity) ) {
-                       // serStream.print("Humidity source: "); PrintN2kEnumType(HumiditySource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", humidity: ",ActualHumidity,0,false);
-      PrintLabelValWithConversionCheckUnDef(", set humidity: ",SetHumidity,0,true);
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
-}
 
-void TemperatureExt(const tN2kMsg &N2kMsg) {
-    unsigned char SID;
-    unsigned char TempInstance;
-    tN2kTempSource TempSource;
-    double ActualTemperature;
-    double SetTemperature;
-    
-    if (ParseN2kTemperatureExt(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
-                      //  serStream.print("Temperature source: "); PrintN2kEnumType(TempSource,serStream,false);
-      PrintLabelValWithConversionCheckUnDef(", actual temperature: ",ActualTemperature,&KelvinToC);
-      PrintLabelValWithConversionCheckUnDef(", set temperature: ",SetTemperature,&KelvinToC,true);
-    } else {
-      serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
-    }
-}
+
 
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg) {
   int iHandler;
   
   // Find handler
-  serStream.print("In Main Handler: "); serStream.println(N2kMsg.PGN);
+  //serStream.print("In Main Handler: "); serStream.println(N2kMsg.PGN);
   for (iHandler=0; NMEA2000Handlers[iHandler].PGN!=0 && !(N2kMsg.PGN==NMEA2000Handlers[iHandler].PGN); iHandler++);
   
   if (NMEA2000Handlers[iHandler].PGN!=0) {
     NMEA2000Handlers[iHandler].Handler(N2kMsg); 
   }
-}
-
-// Function to print the Packet message in a readable format
-void printPacket(const Packet& packet) {
-    cout << "Packet Message:" << endl;
-    cout << "  Board ID: " << packet.board_id() << endl;
-
-    // Convert timestamp to a human-readable string
-    cout << "  Time Data Read: " << TimeUtil::ToString(packet.time_data_read()) << endl;
-
-    // Print Data fields
-    if (packet.has_data()) {
-        cout << "  Data:" << endl;
-        cout << "    Type: " << packet.data().type() << endl;
-        cout << "    Fields:" << endl;
-        for (const auto& field : packet.data().double_fields()) {
-            cout << "      - " << field.label() << ": " << field.value() << endl;
+    // Check if the PGN is already in the vector
+    bool pgnExists = false;
+    for (int i = 0; i < PGNS.size(); ++i) {
+        if (PGNS[i] == N2kMsg.PGN) {
+            pgnExists = true;
+            break;
         }
     }
 
-    // Print protocol
-    cout << "  Protocol: ";
-    switch (packet.protocol()) {
-        case Packet::CAN: cout << "CAN"; break;
-        case Packet::Modbus: cout << "Modbus"; break;
-        default: cout << "Unknown";
+    // If the PGN is not in the vector, add it and print the current PGNs
+    if (!pgnExists) {
+        PGNS.push_back(N2kMsg.PGN);
+        std::cout << "Added PGN: " << N2kMsg.PGN << std::endl;
+        std::cout << "Current PGNs in vector: ";
+        for (int pgn : PGNS) {
+            std::cout << pgn << " ";
+        }
+        std::cout << std::endl;
     }
-    cout << endl;
-
-    // Print original message as hex
-    cout << "  Original Message: ";
-    for (unsigned char c : packet.original_message()) {
-        printf("%02X ", c);
-    }
-    cout << endl;
-
-    // Print digital signature
-    cout << "  Digital Signature: " << packet.digital_signature() << endl;
 }
 
+capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& packet)
+{
+  std::string str_payload;
+  packet.payload().SerializeToString(&str_payload);
 
+  std::string encrypted_payload = encryptString(str_payload);  // TODO
+
+  capstone_protobuf::EncryptedPacket encrypted_packet;
+
+  capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+
+  *metadata_copy = *packet.mutable_metadata();
+
+  encrypted_packet.set_allocated_metadata(metadata_copy);
+  encrypted_packet.set_encrypted_payload(encrypted_payload);
+
+  return encrypted_packet; 
+}
+
+void udpSend(capstone_protobuf::Packet& packet)
+{
+  std::string packet_str;
+  packet.SerializeToString(&packet_str);
+  udpSendString(packet_str);
+  return;
+}
+
+void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
+{
+  std::string packet_str;
+  encrypted_packet.SerializeToString(&packet_str);
+  udpSendString(packet_str);
+
+  // Temp Derserializing Packet Example
+  if (encrypted_packet.ParseFromString(packet_str)) {
+    capstone_protobuf::Packet packet;
+    std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
+    capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+    *metadata_copy = *encrypted_packet.mutable_metadata();
+    packet.set_allocated_metadata(metadata_copy);
+    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+    payload->ParseFromString(payload_str);
+    packet.set_allocated_payload(payload);
+    cout << packet.DebugString() << endl;
+
+  } else {
+      std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+  }
+  return;
+}
 
 int main(void)
 {
@@ -213,7 +223,7 @@ int main(void)
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
  
    
-    NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
+    //NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
     NMEA2000.SetForwardType(tNMEA2000::fwdt_Text);   
     NMEA2000.SetMsgHandler(HandleNMEA2000Msg);                           // Show in clear text (for now)
        
