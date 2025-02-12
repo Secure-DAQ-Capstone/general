@@ -26,6 +26,10 @@ add_library(libudp_sub
   lib/udp_sub.cpp
 )
 
+add_library(lib_security
+  lib/security.cpp
+)
+
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
@@ -36,6 +40,7 @@ target_link_libraries(nmea_reader
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_pub
     libudp_sub
+    lib_security
 )
 
 # Add executable for testing pub/sub functionality
@@ -45,6 +50,7 @@ add_executable(udp_test src/test_roles.cpp)
 target_link_libraries(udp_test
     libudp_pub
     libudp_sub
+    lib_security
 )
 
 

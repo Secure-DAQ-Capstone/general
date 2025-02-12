@@ -167,8 +167,11 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
   std::string str_payload;
   packet.payload().SerializeToString(&str_payload);
 
-  std::string encrypted_payload = encryptString(str_payload);  // TODO
+  encryption_data_t encrypted_payload = encryptString(str_payload);
 
+  std::string encrypted_payload_str = encrypted_payload.encrypted_string;
+  std::string nonce_str = encrypted_payload.nonce;
+  
   capstone_protobuf::EncryptedPacket encrypted_packet;
 
   capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
@@ -176,7 +179,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& pac
   *metadata_copy = *packet.mutable_metadata();
 
   encrypted_packet.set_allocated_metadata(metadata_copy);
-  encrypted_packet.set_encrypted_payload(encrypted_payload);
+  encrypted_packet.set_encrypted_payload(encrypted_payload_str);
 
   return encrypted_packet; 
 }
