@@ -2,18 +2,18 @@
 //#include <N2kMessagesEnumToStr.h>
 
 tNMEA2000Handler NMEA2000Handlers[]={
-  {130310L,&OutsideEnvironmental},
-  {130312L,&Temperature},
-  {130311L,&OutsideEnvironmental2},
-  {127250L,&VesselHeading},
-  {129025, &PositionRapid},
-  {127258, &MagneticVariation},
-  {130316, &TemperatureExt},
-  {129026, &COGSOGRapid},
-  {126992, &SysTime},
-  {129029, &GNSSPosition},
-  {129540, &SatsInView},
-  {130306, &WindData},
+  {130310L,&OutsideEnvironmental}, //works
+  {130312L,&Temperature}, //works
+  {130311L,&OutsideEnvironmental2}, //only temp works
+  {127250L,&VesselHeading}, // works but GPS doesn't change data value
+  {129025L, &PositionRapid}, //works
+  {127258L, &MagneticVariation}, // works
+  {130316L, &TemperatureExt},//works
+  {129026L, &COGSOGRapid}, // works
+  {126992L, &SysTime}, // works
+  {129029L, &GNSSPosition}, // works
+  {129540L, &SatsInView}, // failed to parse
+  {130306L, &WindData}, //works
   {0,0}
 };
 
