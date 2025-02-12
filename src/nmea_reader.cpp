@@ -13,6 +13,7 @@ tNMEA2000Handler NMEA2000Handlers[]={
   {126992, &SysTime},
   {129029, &GNSSPosition},
   {129540, &SatsInView},
+  {130306, &WindData},
   {0,0}
 };
 
