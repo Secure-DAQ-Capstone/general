@@ -6,9 +6,9 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 message(STATUS "Protobuf Include Dir: ${Protobuf_INCLUDE_DIRS}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/lib")
-find_package(sodium REQUIRED)
-include_directories(${sodium_INCLUDE_DIRS})
-message(STATUS "Sodium Libraries: ${sodium_INCLUDE_DIRS}")
+find_package(Sodium REQUIRED)
+include_directories(${SODIUM_INCLUDE_DIR})
+message(STATUS "Sodium Libraries: ${SODIUM_LIBRARIES}")
 
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
@@ -43,7 +43,7 @@ target_link_libraries(nmea_reader
     PRIVATE nmea2000
     PRIVATE nmea2000_socketCAN    
     PRIVATE ${Protobuf_LIBRARIES}
-    ${Sodium_LIBRARIES}
+    PRIVATE ${SODIUM_LIBRARIES}
     libudp_pub
     libudp_sub
     lib_security
