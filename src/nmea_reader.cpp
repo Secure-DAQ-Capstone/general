@@ -1,4 +1,5 @@
 #include "nmea_reader.h"
+#include "constants.h"
 //#include <N2kMessagesEnumToStr.h>
 
 tNMEA2000Handler NMEA2000Handlers[]={
@@ -185,7 +186,7 @@ void udpSend(capstone_protobuf::Packet& packet)
 {
   std::string packet_str;
   packet.SerializeToString(&packet_str);
-  udpSendString(packet_str);
+  udpSendStringToFile(packet_str);
   return;
 }
 
@@ -193,7 +194,7 @@ void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
 {
   std::string packet_str;
   encrypted_packet.SerializeToString(&packet_str);
-  udpSendString(packet_str);
+  udpSendStringToFile(packet_str);
 
   // Temp Derserializing Packet Example
   if (encrypted_packet.ParseFromString(packet_str)) {
@@ -213,11 +214,22 @@ void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
   return;
 }
 
+
+const bool UDP_DEBUG = true;
+UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GraceHouse::Ventana2, false, true);
+
+void udpSend(std::string& packet_str)
+{
+  pub.write(packet_str);
+}
+
+
+
 int main(void)
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    UDPPub pub(1,2,3);
+    // UDPPub pub(1,2,3);
     cout << "Starting CAN watching" << endl;
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
