@@ -201,7 +201,15 @@ void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet)
   // Temp Derserializing Packet Example
   if (encrypted_packet.ParseFromString(packet_str)) {
     capstone_protobuf::Packet packet;
-    std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
+    //TODO: GET THE NONCE FROM THE PACKET
+
+    unsigned char nonce[crypto_secretbox_NONCEBYTES];
+    //Generate the nonce
+    symmetric_key_security_agent.generateNonce(nonce);
+
+    std::string nonce_str(nonce, nonce+crypto_secretbox_NONCEBYTES);
+
+    std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
     capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
     *metadata_copy = *encrypted_packet.mutable_metadata();
     packet.set_allocated_metadata(metadata_copy);

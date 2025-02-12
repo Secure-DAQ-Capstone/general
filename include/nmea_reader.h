@@ -40,7 +40,7 @@ encryption_data_t encryptString(std::string str)
   symmetric_key_security_agent.generateNonce(nonce);
 
   //Encrypt the data and turn it into a string
-  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char*)str.c_str(), str.length());
+  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char*)str.c_str(), str.length(), nonce);
   string encrypted_str(encrypted.begin(), encrypted.end());
   string nonce_str(nonce, nonce + crypto_secretbox_NONCEBYTES);
 
@@ -61,7 +61,8 @@ std::string decryptString(std::string str, std::string nonce_str)
   copy(nonce_str.begin(), nonce_str.end(), nonce);
 
   //Decrypt the data
-  vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt((unsigned char*)str.c_str(), str.length(), nonce);
+  vector<unsigned char> decrypted_array(str.begin(), str.end());
+  vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
   string decrypted_str(decrypted.begin(), decrypted.end());
 
   return decrypted_str;
