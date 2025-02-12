@@ -38,4 +38,13 @@ target_link_libraries(nmea_reader
     libudp_sub
 )
 
+# Add executable for testing pub/sub functionality
+add_executable(udp_test src/test_roles.cpp)
+
+# Link for test
+target_link_libraries(udp_test
+    libudp_pub
+    libudp_sub
+)
+
 

@@ -8,7 +8,11 @@ UDPSub::UDPSub(size_t max_buffer_size, int port, in_addr_t address)
         throw std::runtime_error(formatErrorMessage("Error opening Socket"));
     }
     this->max_buffer_size = max_buffer_size;
-    // Bind the socket to an address and port
+
+    /**
+     * Bind the socket to an address and port.
+     * We expect this to bind to the computers local IP and port
+     */
     sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -20,17 +24,26 @@ UDPSub::UDPSub(size_t max_buffer_size, int port, in_addr_t address)
         close(socket_fd);
         throw std::runtime_error(formatErrorMessage("Error binding Socket"));
     }
+    else
+    {
+        std::cout << "Socket bound to address: " << inet_ntoa(server_addr.sin_addr) << " and port: " << ntohs(server_addr.sin_port) << std::endl;
+    }
 }
 
 std::string UDPSub::read()
 {
     // Receive message
     char buffer[max_buffer_size];
+
+    /**
+     * Define a socket address that will be populated with the senders address
+     * by the recvfrom syscall
+     */
     sockaddr_in client_addr;
     socklen_t client_len = sizeof(client_addr);
 
     ssize_t recv_bytes = recvfrom(socket_fd, buffer, sizeof(buffer) - 1, 0,
-                                    (sockaddr *)&client_addr, &client_len);
+                                  (sockaddr *)&client_addr, &client_len);
     if (recv_bytes < 0)
     {
         throw std::runtime_error(formatErrorMessage("Error receiving message"));
@@ -40,6 +53,7 @@ std::string UDPSub::read()
     std::cout << "Received message" << std::endl;
     return received_message;
 }
+
 UDPSub::~UDPSub()
 {
     close(socket_fd);
