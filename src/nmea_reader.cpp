@@ -458,9 +458,9 @@ void udpSend(capstone_protobuf::EncryptedPacket &encrypted_packet)
     packet.set_allocated_payload(payload);
     cout << packet.DebugString() << endl;
 
-  // } else {
-  //     std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
-  // }
+  } else {
+       std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+  }
   return;
 }
 
