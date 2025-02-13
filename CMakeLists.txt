@@ -26,6 +26,9 @@ add_library(libudp_sub
   lib/udp_sub.cpp
 )
 
+
+############# NMEA READER
+
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
@@ -38,6 +41,8 @@ target_link_libraries(nmea_reader
     libudp_sub
 )
 
+############## udp_test file
+
 # Add executable for testing pub/sub functionality
 add_executable(udp_test src/test_roles.cpp)
 
@@ -46,5 +51,23 @@ target_link_libraries(udp_test
     libudp_pub
     libudp_sub
 )
+
+############# NAUTILUS Subscriber File
+
+# Add executable for testing pub/sub functionality
+add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+target_link_libraries(application
+    PRIVATE ${Protobuf_LIBRARIES}
+    libudp_sub
+)
+
+##### Broadcast
+
+add_executable(receiver src/broadcast_receiver.cpp)
+
+add_executable(sender src/broadcast_sender.cpp)
+
+
 
 

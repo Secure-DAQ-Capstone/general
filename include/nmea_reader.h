@@ -34,7 +34,7 @@ std::string decryptString(std::string str)
   return str;
 }
 
-void udpSendString(std::string str) 
+void udpSendStringToFile(std::string str) 
 {
   std::string filename = "str_msgs.txt";
   std::ofstream file(filename, std::ios::app);
@@ -70,8 +70,11 @@ void SatsInView(const tN2kMsg &N2kMsg);
 void WindData(const tN2kMsg &N2kMsg);
 void HandleNMEA2000Msg(const tN2kMsg &N2kMsg);
 capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet& packet);
+
 void udpSend(capstone_protobuf::Packet& packet);
 void udpSend(capstone_protobuf::EncryptedPacket& encrypted_packet);
+void udpSend(std::string str);
+
 
 
 // Template Function Implementations ********************************************************************
