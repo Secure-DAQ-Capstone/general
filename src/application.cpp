@@ -1,4 +1,6 @@
 #include "application.h"
+#include "proto_json_converter.h"
+#include "mongodb_handler.h"
 #include "udp_sub.h"
 #include "constants.h"
 #include "packet.pb.h"
@@ -73,15 +75,22 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
 }
 
 // Update the Application class
-void Application::update()
-{
-
+void Application::update() {
     // Received UDP Protobuf Packets
     std::string message = this->sub.read();
-
+    
     // Convert the string into a proto packet
     capstone_protobuf::Packet packet;
     bool success = this->get_proto_packet(message, packet);
+    
+    if (success) {
+        // Convert packet to JSON
+        std::string json_data = ProtoJsonConverter::toJson(packet);
+        
+        // Store JSON data into MongoDB
+        MongoDBHandler dbHandler("mongodb://localhost:27017", "dataMarineSystem", "packetData");
+        dbHandler.storeJson(json_data);
+    }
 }
 
 // Run the Application class

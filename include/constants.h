@@ -3,7 +3,7 @@
 
 struct GracesHouse
 {
-    static constexpr const char *Ventana1 = "192.168.2.101";
+    static constexpr const char *Ventana1_ETH1 = "192.168.2.101";
     static constexpr const char *Ventana2 = "192.168.2.142";
     static constexpr const char *Ventana3 = "";
     static constexpr const char *Ventana4 = "";
