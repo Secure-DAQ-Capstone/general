@@ -51,7 +51,7 @@ target_compile_options(db_handler PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFL
 
 add_library(proto_json
   lib/proto_json_converter.cpp
-
+)
 add_library(lib_security
   lib/security.cpp
 )

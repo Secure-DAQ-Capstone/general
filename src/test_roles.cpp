@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
      */
     const char *sendto_address = "192.168.2.101"; // ventana2
     // const char* sub_local_address = "127.0.0.1";
-    const char *sub_local_address = GracesHouse::Ventana1; // ventana1
+    const char *sub_local_address = GracesHouse::Ventana1_ETH1; // ventana1
 
     std::string role = argv[1];
     if (role == "sub")
