@@ -73,6 +73,7 @@ add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(application
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
+    lib_security
 )
 
 ##### Broadcast

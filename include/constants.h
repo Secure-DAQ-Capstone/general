@@ -17,7 +17,7 @@ struct MattsHouse
     static constexpr int BROADCAST_PORT = 12345;
 };
 
-static constexpr const char *LOOPBACK_IP = "192.168.2.142";
+static constexpr const char *LOOPBACK_IP = "192.168.2.101";
 
 #define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080
