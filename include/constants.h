@@ -8,6 +8,7 @@ struct GracesHouse
     static constexpr const char *Ventana3 = "";
     static constexpr const char *Ventana4 = "";
     static constexpr const char *BROADCAST_IP = "";
+    static constexpr const char *GraceLaptop = "192.168.2.56";
 };
 
 struct MattsHouse
