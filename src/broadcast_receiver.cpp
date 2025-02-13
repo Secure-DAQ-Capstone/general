@@ -3,7 +3,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define PORT 12345
+#define PORT 8080
 #define BUFFER_SIZE 1024
 
 int main()

@@ -8,6 +8,7 @@ struct GracesHouse
     static constexpr const char *Ventana3 = "";
     static constexpr const char *Ventana4 = "";
     static constexpr const char *BROADCAST_IP = "";
+    static constexpr const char *GraceLaptop = "192.168.2.56";
 };
 
 struct MattsHouse
@@ -16,7 +17,7 @@ struct MattsHouse
     static constexpr int BROADCAST_PORT = 12345;
 };
 
-static constexpr const char *LOOPBACK_IP = "127.0.0.1";
+static constexpr const char *LOOPBACK_IP = "192.168.2.101";
 
 #define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080

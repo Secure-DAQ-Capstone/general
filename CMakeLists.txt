@@ -7,6 +7,11 @@ find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 message(STATUS "Protobuf Include Dir: ${Protobuf_INCLUDE_DIRS}")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/lib")
+find_package(Sodium REQUIRED)
+include_directories(${sodium_INCLUDE_DIR})
+message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
+
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
 
@@ -28,6 +33,7 @@ add_library(libudp_sub
   lib/udp_sub.cpp
 )
 
+
 # Find and link MongoDB libraries
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
@@ -45,6 +51,13 @@ target_compile_options(db_handler PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFL
 
 add_library(proto_json
   lib/proto_json_converter.cpp
+
+add_library(lib_security
+  lib/security.cpp
+)
+
+target_link_libraries(lib_security
+  PRIVATE ${sodium_LIBRARIES}
 )
 
 ############# NMEA READER
@@ -59,6 +72,7 @@ target_link_libraries(nmea_reader
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_pub
     libudp_sub
+    lib_security
 )
 
 ############## udp_test file
@@ -92,6 +106,7 @@ target_link_libraries(application
     db_handler
     proto_json
     PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
+    lib_security
 )
 
 target_compile_options(application PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
