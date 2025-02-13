@@ -21,11 +21,11 @@ void runSubscriber(size_t buffer_size, int port, const char* address)
     }
 }
 
-void runPublisher(size_t buffer_size, int port, const char* address, bool enable_broadcast)
+void runPublisher(size_t buffer_size, int port, const char* address, bool enable_broadcast, bool debug)
 {
     try
     {
-        UDPPub publisher(buffer_size, port, address, enable_broadcast);
+        UDPPub publisher(buffer_size, port, address, enable_broadcast, debug);
         std::string message;
         while (true)
         {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
      * The subscriber is binding a socket to it's local IP and Port.
      * Therefore you can expect this to be a loop back.
      */
-    const char* sendto_address = "192.168.2.142"; //ventana2
+    const char* sendto_address = "192.168.2.101"; //ventana2
     // const char* sub_local_address = "127.0.0.1";
     const char* sub_local_address = GraceHouse::Ventana1; // ventana1
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     }
     else if (role == "pub")
     {
-        runPublisher(buffer_size, port, sendto_address, false);
+        runPublisher(buffer_size, port, sendto_address, false, true);
     }
     else
     {
