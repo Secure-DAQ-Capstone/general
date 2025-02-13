@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 
-void runSubscriber(size_t buffer_size, int port, const char* address)
+void runSubscriber(size_t buffer_size, int port, const char *address)
 {
     try
     {
@@ -21,7 +21,7 @@ void runSubscriber(size_t buffer_size, int port, const char* address)
     }
 }
 
-void runPublisher(size_t buffer_size, int port, const char* address, bool enable_broadcast, bool debug)
+void runPublisher(size_t buffer_size, int port, const char *address, bool enable_broadcast, bool debug)
 {
     try
     {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
      * Grace's House
      * 192.168.2.142   ventana2
      * 192.168.2.101   ventana1
-    */
+     */
 
     /**
      * This is the port that te publisher would send messages too.
@@ -72,10 +72,9 @@ int main(int argc, char *argv[])
      * The subscriber is binding a socket to it's local IP and Port.
      * Therefore you can expect this to be a loop back.
      */
-    const char* sendto_address = "192.168.2.101"; //ventana2
+    const char *sendto_address = "192.168.2.101"; // ventana2
     // const char* sub_local_address = "127.0.0.1";
-    const char* sub_local_address = GraceHouse::Ventana1; // ventana1
-
+    const char *sub_local_address = GracesHouse::Ventana1; // ventana1
 
     std::string role = argv[1];
     if (role == "sub")

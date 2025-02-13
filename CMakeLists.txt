@@ -57,8 +57,17 @@ target_link_libraries(udp_test
 # Add executable for testing pub/sub functionality
 add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
-# Link for test
 target_link_libraries(application
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
 )
+
+##### Broadcast
+
+add_executable(receiver src/broadcast_receiver.cpp)
+
+add_executable(sender src/broadcast_sender.cpp)
+
+
+
+
