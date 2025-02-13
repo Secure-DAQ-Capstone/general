@@ -1,22 +1,24 @@
-#include "nautilus.h"
+#include "application.h"
 #include "udp_sub.h"
 #include "constants.h"
 #include "packet.pb.h"
 #include <iostream>
 
 // Constructor
-Nautilus::Nautilus(bool debug, bool debug_sub)
-    : debug(debug), sub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GraceHouse::Ventana1, debug_sub) 
-    {  
+Application::Application(bool debug, bool debug_sub)
+    : debug(debug), sub(UDP_BUFFER_SIZE, PUBLISHER_PORT, LOOPBACK_IP, debug_sub)
+{
 }
 
 /**
  * the packet_out is where the completed packet will be stored.
  */
-bool Nautilus::get_proto_packet(std::string packet_str, capstone_protobuf::Packet& packet_output) {
+bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Packet &packet_output)
+{
     capstone_protobuf::EncryptedPacket encrypted_packet;
 
-    try {
+    try
+    {
         // Parse the string. Raises an error if the input cannot be parses
         encrypted_packet.ParseFromString(packet_str);
 
@@ -39,13 +41,15 @@ bool Nautilus::get_proto_packet(std::string packet_str, capstone_protobuf::Packe
         // Set the payload of the our new packet
         packet_output.set_allocated_payload(payload);
 
-        if (this->debug) {
+        if (this->debug)
+        {
             std::cout << packet_output.DebugString() << std::endl;
         }
 
         return true;
-
-    } catch(const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << this->formatErrorMessage(e.what()) << '\n';
         return false;
     }
@@ -53,8 +57,9 @@ bool Nautilus::get_proto_packet(std::string packet_str, capstone_protobuf::Packe
     return false;
 }
 
-// Update the Nautilus class
-void Nautilus::update() {
+// Update the Application class
+void Application::update()
+{
 
     // Received UDP Protobuf Packets
     std::string message = this->sub.read();
@@ -64,20 +69,21 @@ void Nautilus::update() {
     bool success = this->get_proto_packet(message, packet);
 }
 
-
-// Run the Nautilus class
-int main() {
+// Run the Application class
+int main()
+{
     // Init protobuf variables
     GOOGLE_PROTOBUF_VERIFY_VERSION;
-    
+
     // initialize the classes
-    bool debug_nautilus = true;
+    bool debug_application = true;
     bool debug_sub = false;
-    Nautilus nautilus(debug_nautilus, debug_sub);
+    Application application(debug_application, debug_sub);
 
     // run the loop
-    while (true) {
-        nautilus.update();
+    while (true)
+    {
+        application.update();
     }
 
     return 0;

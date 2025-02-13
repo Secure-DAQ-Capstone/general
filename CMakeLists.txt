@@ -55,10 +55,10 @@ target_link_libraries(udp_test
 ############# NAUTILUS Subscriber File
 
 # Add executable for testing pub/sub functionality
-add_executable(nautilus src/nautilus.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 # Link for test
-target_link_libraries(nautilus
+target_link_libraries(application
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
 )

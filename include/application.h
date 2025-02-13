@@ -1,23 +1,22 @@
-#ifndef NAUTILUS_H
-#define NAUTILUS_H
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include <string>
 #include "udp_sub.h"
 #include "packet.pb.h"
 
-class Nautilus {
+class Application
+{
 public:
-    Nautilus(bool debug, bool debug_sub);
+    Application(bool debug, bool debug_sub);
     void update();
 
-    bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet& packet_output);
+    bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet &packet_output);
 
     std::string decryptString(std::string str)
     {
-    return str;
+        return str;
     }
-
-
 
 private:
     const bool UDP_DEBUG = true;
@@ -30,4 +29,4 @@ private:
     }
 };
 
-#endif // NAUTILUS_H
+#endif // APPLICATION_H

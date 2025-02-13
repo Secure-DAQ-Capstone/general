@@ -32,6 +32,14 @@ Instructions [here](https://grpc.io/docs/protoc-installation/).
 sudo apt install -y protobuf-compiler
 ```
 
+### NMEA Dependencies
+
+socketCAN must be installed and working on your system - refer to the adapters users guide.  And make sure to 'start up' the CAN port, example:
+
+```bash
+$ sudo /sbin/ip link set can0 up type can bitrate 250000
+```
+
 ## Build
 
 In the nmea_test directory:
@@ -59,13 +67,12 @@ To run the sub or pub tests
 ./upd_test sub
 ```
 
+To run the `Application` class that can read and deserialize packets.
+
+```bash
+./application
+```
+
 ## SSH key setup
 
 Follow the steps from [GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux).
-
-## Dependencies
-
-socketCAN must be installed and working on your system - refer to the adapters users guide.  And make sure to 'start up' the CAN port, example:
-```
-$ sudo /sbin/ip link set can0 up type can bitrate 250000
-```
