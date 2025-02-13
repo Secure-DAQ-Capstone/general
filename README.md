@@ -53,6 +53,7 @@ make
 To run:
 
 ```bash
+sudo /sbin/ip link set can0 up type can bitrate 250000
 cd build
 ./nmea_reader
 ```
