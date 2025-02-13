@@ -1,9 +1,10 @@
 #include "udp_pub.h"
 #include "udp_sub.h"
+#include "constants.h"
 #include <iostream>
 #include <thread>
 
-void runSubscriber(size_t buffer_size, int port, in_addr_t address)
+void runSubscriber(size_t buffer_size, int port, const char *address)
 {
     try
     {
@@ -20,11 +21,11 @@ void runSubscriber(size_t buffer_size, int port, in_addr_t address)
     }
 }
 
-void runPublisher(size_t buffer_size, int port, in_addr_t address, bool enable_broadcast)
+void runPublisher(size_t buffer_size, int port, const char *address, bool enable_broadcast, bool debug)
 {
     try
     {
-        UDPPub publisher(buffer_size, port, address, enable_broadcast);
+        UDPPub publisher(buffer_size, port, address, enable_broadcast, debug);
         std::string message;
         while (true)
         {
@@ -53,18 +54,27 @@ int main(int argc, char *argv[])
     int port = 8080;
 
     /**
+     * Grace's House
+     * 192.168.2.142   ventana2
+     * 192.168.2.101   ventana1
+     */
+
+    /**
      * This is the port that te publisher would send messages too.
      * It doesn't bind to a socket, it just sends a message when needed.
-     *
+    //  *
      * Therefore, this would need to be replaced with the address of the computer you want to send too.
      */
-    in_addr_t sendto_address = inet_addr("192.168.2.111");
+    // in_addr_t sendto_address = inet_addr("192.168.2.142"); // ventana2
+    // in_addr_t sendto_address = inet_addr("192.168.2.101"); // ventana1
 
     /**
      * The subscriber is binding a socket to it's local IP and Port.
      * Therefore you can expect this to be a loop back.
      */
-    in_addr_t sub_local_address = inet_addr("127.0.0.1");
+    const char *sendto_address = "192.168.2.101"; // ventana2
+    // const char* sub_local_address = "127.0.0.1";
+    const char *sub_local_address = GracesHouse::Ventana1; // ventana1
 
     std::string role = argv[1];
     if (role == "sub")
@@ -73,7 +83,7 @@ int main(int argc, char *argv[])
     }
     else if (role == "pub")
     {
-        runPublisher(buffer_size, port, sendto_address, false);
+        runPublisher(buffer_size, port, sendto_address, false, true);
     }
     else
     {

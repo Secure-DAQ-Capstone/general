@@ -1,6 +1,7 @@
 #include "udp_sub.h"
 
-UDPSub::UDPSub(size_t max_buffer_size, int port, in_addr_t address)
+UDPSub::UDPSub(size_t max_buffer_size, int port, const char* address, bool debug)
+: debug(debug)
 {
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0)
@@ -17,7 +18,7 @@ UDPSub::UDPSub(size_t max_buffer_size, int port, in_addr_t address)
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-    server_addr.sin_addr.s_addr = address;
+    server_addr.sin_addr.s_addr = inet_addr(address);
 
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
@@ -30,10 +31,11 @@ UDPSub::UDPSub(size_t max_buffer_size, int port, in_addr_t address)
     }
 }
 
+
 std::string UDPSub::read()
 {
     // Receive message
-    char buffer[max_buffer_size];
+    char buffer[this->max_buffer_size];
 
     /**
      * Define a socket address that will be populated with the senders address
@@ -42,17 +44,28 @@ std::string UDPSub::read()
     sockaddr_in client_addr;
     socklen_t client_len = sizeof(client_addr);
 
+    /**
+     * Returns the number of bytes received.
+    */
     ssize_t recv_bytes = recvfrom(socket_fd, buffer, sizeof(buffer) - 1, 0,
                                   (sockaddr *)&client_addr, &client_len);
     if (recv_bytes < 0)
     {
         throw std::runtime_error(formatErrorMessage("Error receiving message"));
     }
-    buffer[recv_bytes] = '\0';
+
+    /**
+     *  create a string from the bytes received.
+     */
     std::string received_message(buffer, recv_bytes);
-    std::cout << "Received message" << std::endl;
+
+    if (this->debug){
+        std::cout << "Received message" << std::endl;
+    }
+
     return received_message;
 }
+
 
 UDPSub::~UDPSub()
 {

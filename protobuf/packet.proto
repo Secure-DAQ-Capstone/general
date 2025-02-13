@@ -79,10 +79,60 @@ message GPS
   int64 altitude = 3;
 }
 
+message Position
+{
+  double latitude = 1;
+  double longitude = 2;
+}
+
 message Heading
 {
   double heading = 1;
   double deviation = 2;
   double variation = 3;
 }
+
+message MagneticVariation
+{
+  uint32 age_of_service = 1;
+  double variation = 2;
+}
+
+message COGSOG
+{
+  uint32 cog = 1;
+  double sog = 2;
+}
+
+message SysTime
+{
+  uint32 date = 1;
+  double time = 2;
+}
+
+message GNSS
+{
+  uint32 date = 1;
+  double time = 2;
+  double latitude = 3;
+  double longitude = 4;
+  double altitude = 5;
+  uint32 num_satellites = 6;
+  uint32 HDOP = 7;
+  uint32 PDOP = 8;
+  double geoidal_separation = 9;
+  uint32 num_reference_stations = 10;
+}
+
+message SatsInView
+{
+  uint32 sats_in_view = 1;
+}
+
+message Wind
+{
+  double speed = 1;
+  double angle = 2;
+}
+
 // [END messages]
