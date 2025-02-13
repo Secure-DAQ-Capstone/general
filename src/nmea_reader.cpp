@@ -416,7 +416,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 }
 
 const bool UDP_DEBUG = true;
-UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GracesHouse::GraceLaptop, false, true);
+UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GracesHouse::Ventana1, false, true);
 
 void udpSendString(std::string packet_str)
 {
@@ -438,29 +438,31 @@ void udpSend(capstone_protobuf::EncryptedPacket &encrypted_packet)
   encrypted_packet.SerializeToString(&packet_str);
   udpSendString(packet_str);
 
-  // Temp Derserializing Packet Example
-  if (encrypted_packet.ParseFromString(packet_str)) {
-    capstone_protobuf::Packet packet;
-    //TODO: GET THE NONCE FROM THE PACKET
+  cout << encrypted_packet.DebugString() << endl;
 
-    unsigned char nonce[crypto_secretbox_NONCEBYTES];
-    //Generate the nonce
-    symmetric_key_security_agent.generateNonce(nonce);
+  // // Temp Derserializing Packet Example
+  // if (encrypted_packet.ParseFromString(packet_str)) {
+  //   capstone_protobuf::Packet packet;
+  //   //TODO: GET THE NONCE FROM THE PACKET
 
-    std::string nonce_str(nonce, nonce+crypto_secretbox_NONCEBYTES);
+  //   unsigned char nonce[crypto_secretbox_NONCEBYTES];
+  //   //Generate the nonce
+  //   symmetric_key_security_agent.generateNonce(nonce);
 
-    std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
-    capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
-    *metadata_copy = *encrypted_packet.mutable_metadata();
-    packet.set_allocated_metadata(metadata_copy);
-    capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-    payload->ParseFromString(payload_str);
-    packet.set_allocated_payload(payload);
-    cout << packet.DebugString() << endl;
+  //   std::string nonce_str(nonce, nonce+crypto_secretbox_NONCEBYTES);
 
-  } else {
-       std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
-  }
+  //   std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
+  //   capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
+  //   *metadata_copy = *encrypted_packet.mutable_metadata();
+  //   packet.set_allocated_metadata(metadata_copy);
+  //   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
+  //   payload->ParseFromString(payload_str);
+  //   packet.set_allocated_payload(payload);
+  //   cout << packet.DebugString() << endl;
+
+  // } else {
+  //      std::cerr << "Failed to parse string into Protobuf message!" << std::endl;
+  // }
   return;
 }
 
