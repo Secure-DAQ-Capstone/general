@@ -5,6 +5,11 @@ find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 message(STATUS "Protobuf Include Dir: ${Protobuf_INCLUDE_DIRS}")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/lib")
+find_package(Sodium REQUIRED)
+include_directories(${sodium_INCLUDE_DIR})
+message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
+
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
 
@@ -26,6 +31,13 @@ add_library(libudp_sub
   lib/udp_sub.cpp
 )
 
+add_library(lib_security
+  lib/security.cpp
+)
+
+target_link_libraries(lib_security
+  PRIVATE ${sodium_LIBRARIES}
+)
 
 ############# NMEA READER
 
@@ -39,6 +51,7 @@ target_link_libraries(nmea_reader
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_pub
     libudp_sub
+    lib_security
 )
 
 ############## udp_test file
@@ -60,6 +73,7 @@ add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(application
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
+    lib_security
 )
 
 ##### Broadcast

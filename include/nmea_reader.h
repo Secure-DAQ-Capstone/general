@@ -11,6 +11,7 @@
 #include "udp_pub.h"
 #include <iomanip>
 #include <fstream> 
+#include "security.h"
 
 using namespace std;
 using google::protobuf::util::TimeUtil;
@@ -20,18 +21,52 @@ typedef struct {
   void (*Handler)(const tN2kMsg &N2kMsg); 
 } tNMEA2000Handler;
 
+typedef struct {
+  string encrypted_string;
+  string nonce;
+} encryption_data_t;
+
 tSocketStream serStream; 
 std::vector<int> PGNS;
 
+security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
+
 // TODO - Temporary Implementations **********************************************************************
-std::string encryptString(std::string str) //TODO
+//Call the encryption function from the security class
+encryption_data_t encryptString(std::string str)
 {
-  return str;
+  unsigned char nonce[crypto_secretbox_NONCEBYTES];
+  //Generate the nonce
+  symmetric_key_security_agent.generateNonce(nonce);
+  
+  //Encrypt the data and turn it into a string
+  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char*)str.data(), str.length(), nonce);
+  
+  string encrypted_str((const char*)(encrypted.data()),  encrypted.size()); 
+  string nonce_str(nonce, nonce + crypto_secretbox_NONCEBYTES);
+
+  //Add the encrypted data and the nonce to the struct
+  encryption_data_t encrypted_data;
+  encrypted_data.encrypted_string = encrypted_str;
+  encrypted_data.nonce = nonce_str;
+
+  return encrypted_data;
 }
 
-std::string decryptString(std::string str)
+//Call the decryption function from the security class
+std::string decryptString(std::string str, std::string nonce_str)
 {
-  return str;
+  unsigned char nonce[crypto_secretbox_NONCEBYTES];
+
+  //Convert the nonce string to a char array
+  copy(nonce_str.begin(), nonce_str.end(), nonce);
+
+  //Decrypt the data
+  vector<unsigned char> decrypted_array(str.begin(), str.end());
+  vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
+  string decrypted_str(decrypted.begin(), decrypted.end());
+
+  return decrypted_str;
 }
 
 void udpSendStringToFile(std::string str) 
