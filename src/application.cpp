@@ -37,11 +37,11 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
     std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
     capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
     *metadata_copy = *encrypted_packet.mutable_metadata();
-    packet.set_allocated_metadata(metadata_copy);
+    packet_output.set_allocated_metadata(metadata_copy);
     capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
     payload->ParseFromString(payload_str);
-    packet.set_allocated_payload(payload);
-    cout << packet.DebugString() << endl;
+    packet_output.set_allocated_payload(payload);
+    cout << packet_output.DebugString() << endl;
         // // Make a new MetaData object
         // capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
 
@@ -88,7 +88,7 @@ void Application::update() {
         std::string json_data = ProtoJsonConverter::toJson(packet);
         
         // Store JSON data into MongoDB
-        MongoDBHandler dbHandler("mongodb://localhost:27017", "dataMarineSystem", "packetData");
+        MongoDBHandler dbHandler("mongodb://localhost:27017", "dataMarineSystem", "data");
         dbHandler.storeJson(json_data);
     }
 }
