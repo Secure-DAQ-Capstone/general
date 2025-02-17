@@ -416,7 +416,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 }
 
 const bool UDP_DEBUG = true;
-UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GracesHouse::GraceLaptop, false, true);
+UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, false, true);
 
 void udpSendString(std::string packet_str)
 {
