@@ -7,8 +7,8 @@
 #include <iostream>
 
 // Constructor
-Application::Application(bool debug, bool debug_sub)
-    : debug(debug), sub(UDP_BUFFER_SIZE, PUBLISHER_PORT, LOOPBACK_IP, debug_sub)
+Application::Application(const int receive_port, const char* receive_ip, bool debug, bool debug_sub)
+    : debug(debug), sub(receive_port, receive_ip, LOOPBACK_IP, debug_sub)
 {
 }
 
@@ -42,26 +42,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
     payload->ParseFromString(payload_str);
     packet_output.set_allocated_payload(payload);
     cout << packet_output.DebugString() << endl;
-        // // Make a new MetaData object
-        // capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
-
-        // // Copy the metadata from the encrypted packet to the new packet
-        // *metadata_copy = *encrypted_packet.mutable_metadata();
-
-        // // Set the metadata of the new packet
-        // packet_output.set_allocated_metadata(metadata_copy);
-
-        // // Make a new Payload object and copy the payload string to it
-        // capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
-        // payload->ParseFromString(payload_str);
-
-        // // Set the payload of the our new packet
-        // packet_output.set_allocated_payload(payload);
-
-        // if (this->debug)
-        // {
-        //     std::cout << packet_output.DebugString() << std::endl;
-        // }
+        
 
         return true;
     }

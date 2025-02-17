@@ -12,7 +12,7 @@ security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
 class Application
 {
 public:
-    Application(bool debug, bool debug_sub);
+    Application(const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
     void update();
 
     bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet &packet_output);
