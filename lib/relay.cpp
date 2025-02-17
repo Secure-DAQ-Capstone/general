@@ -13,9 +13,6 @@ void Relay::relay_packet(const std::string &packet_str) {
 
     if (success) {
         // Process the packet as needed
-
-
-
         if (this->debug) {
             std::cout << "Relaying packet: " << packet_str << std::endl;
         }

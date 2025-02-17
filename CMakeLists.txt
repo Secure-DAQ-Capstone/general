@@ -49,6 +49,10 @@ else()
 endif()
 
 
+# Parameters
+set(USE_BROADCAST OFF)
+
+
 
 add_library(security STATIC
   lib/security.cpp
@@ -127,11 +131,17 @@ if (USE_MONGO)
   set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 
 endif()
+
+
 ##### Broadcast
 
-add_executable(receiver src/broadcast_receiver.cpp)
+if (USE_BROADCAST)
 
-add_executable(sender src/broadcast_sender.cpp)
+  add_executable(receiver src/broadcast_receiver.cpp)
+
+  add_executable(sender src/broadcast_sender.cpp)
+
+endif()
 
 
 ############# main Application File
@@ -139,18 +149,18 @@ add_executable(sender src/broadcast_sender.cpp)
 #Add executable
 add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
-add_library(lib_application
+add_library(application
   lib/application.cpp
   )
 
 add_library(constants
   lib/constants.cpp
-)
+  )
 
 target_link_libraries(app_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
-  lib_application
+  application
   security
   constants
 )
@@ -170,7 +180,7 @@ target_link_libraries(relay_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
   relay
-  lib_application
+  application
   security
   constants
 )
