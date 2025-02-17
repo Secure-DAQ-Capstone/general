@@ -2,8 +2,8 @@
 #include <iostream>
 
 // Constructor definition
-MongoApp::MongoApp(const int receive_port, const char* receive_ip, bool debug, bool debug_sub)
-    : Application(receive_port, receive_ip, debug, debug_sub) {
+MongoApp::MongoApp(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub)
+    : Application(max_buffer_size, receive_port, receive_ip, debug, debug_sub) {
     if (debug) {
         std::cout << "MongoDB App initialized" << std::endl;
     }
@@ -38,7 +38,8 @@ int main()
     // Init Application
     bool debug_application = true;
     bool debug_sub = false;
-    MongoApp mongo_app(PUBLISHER_PORT, LOOPBACK_IP, debug_application, debug_sub);
+    size_t max_buffer_size = UDP_BUFFER_SIZE;
+    MongoApp mongo_app(max_buffer_size, PUBLISHER_PORT, LOOPBACK_IP, debug_application, debug_sub);
 
     // run the loop
     while (true)

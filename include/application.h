@@ -5,14 +5,15 @@
 #include "udp_sub.h"
 #include "packet.pb.h"
 #include "security.h"
+#include "constants.h"
 #include <vector>
 
 using namespace std;
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
+
 class Application
 {
 public:
-    Application(const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
+    Application(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
     
     // Declare as virtual for the relay node
     virtual void update(); 
@@ -32,20 +33,24 @@ public:
 
         //Decrypt the data
         vector<unsigned char> decrypted_array(str.begin(), str.end());
+        // Should be defined globally
         vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
         string decrypted_str(decrypted.begin(), decrypted.end());
 
         return decrypted_str;
     }
+
+    
+protected:
+    bool debug;
+    UDPSub sub;
+
     
 private:
-    const bool UDP_DEBUG = true;
-    UDPSub sub;
-    bool debug;
 
     std::string formatErrorMessage(const std::string &message) const
     {
-        return "UDPPub: " + message;
+        return "Application: " + message;
     }
 };
 

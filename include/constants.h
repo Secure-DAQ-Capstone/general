@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include "security.h"
+
 struct GracesHouse
 {
     static constexpr const char *Ventana1_ETH1 = "192.168.2.101";
@@ -21,5 +23,7 @@ static constexpr const char *LOOPBACK_IP = "192.168.2.56";
 
 #define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080
+
+extern security_base symmetric_key_security_agent;
 
 #endif // CONSTANTS_H

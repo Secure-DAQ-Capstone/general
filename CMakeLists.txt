@@ -50,11 +50,11 @@ endif()
 
 
 
-add_library(lib_security
+add_library(security STATIC
   lib/security.cpp
 )
 
-target_link_libraries(lib_security
+target_link_libraries(security
   PRIVATE ${sodium_LIBRARIES}
 )
 
@@ -70,7 +70,7 @@ target_link_libraries(nmea_reader
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_pub
     libudp_sub
-    lib_security
+    security
 )
 
 ############## udp_test file
@@ -120,7 +120,7 @@ if (USE_MONGO)
     db_handler
     proto_json
     PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
-    lib_security
+    security
   )
 
   target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
@@ -134,15 +134,43 @@ add_executable(receiver src/broadcast_receiver.cpp)
 add_executable(sender src/broadcast_sender.cpp)
 
 
-############# Application File
+############# main Application File
 
 #Add executable
-add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
+add_library(lib_application
+  lib/application.cpp
+  )
 
-#Include MongoDB headers and libraries
-target_link_libraries(application
+add_library(constants
+  lib/constants.cpp
+)
+
+target_link_libraries(app_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
-  lib_security
+  lib_application
+  security
+  constants
+)
+
+
+############# Relay File
+
+#Add executable
+add_executable(relay_main src/relay_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+
+add_library(relay
+  lib/relay.cpp
+  )
+
+target_link_libraries(relay_main
+  PRIVATE ${Protobuf_LIBRARIES}
+  libudp_sub
+  relay
+  lib_application
+  security
+  constants
 )

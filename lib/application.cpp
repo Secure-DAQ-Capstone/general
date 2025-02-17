@@ -5,8 +5,8 @@
 #include <iostream>
 
 // Constructor
-Application::Application(const int receive_port, const char* receive_ip, bool debug, bool debug_sub)
-    : debug(debug), sub(receive_port, receive_ip, LOOPBACK_IP, debug_sub)
+Application::Application(size_t max_buffer_size, int receive_port, const char* receive_ip, bool debug, bool debug_sub)
+    : debug(debug), sub(max_buffer_size, receive_port, receive_ip, debug_sub)
 {
 }
 
@@ -83,22 +83,3 @@ void Application::update() {
     bool success = this->get_proto_packet(message, packet);
 }
 
-// Run the Application class
-int main()
-{
-    // Init protobuf variables
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-    // Init Application
-    bool debug_application = true;
-    bool debug_sub = false;
-    Application application(PUBLISHER_PORT, LOOPBACK_IP, debug_application, debug_sub);
-
-    // run the loop
-    while (true)
-    {
-        application.update();
-    }
-
-    return 0;
-}
