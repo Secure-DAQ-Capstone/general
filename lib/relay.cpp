@@ -11,12 +11,8 @@ void Relay::relay_packet(const std::string &packet_str) {
     // Parse the proto packet from a string
     bool success = get_encrypted_proto_packet(packet_str, encrypted_packet);
 
-    if (success) {
-        // Process the packet as needed
-        if (this->debug) {
-            std::cout << "Relaying packet: " << packet_str << std::endl;
-        }
-    } else {
+    
+    if (!success){
         std::cerr << "Failed to parse and relay packet." << std::endl;
     }
 }

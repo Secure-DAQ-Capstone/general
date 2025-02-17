@@ -61,13 +61,21 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
 
 bool Application::get_encrypted_proto_packet(std::string packet_str, capstone_protobuf::EncryptedPacket &packet_output) 
 {
-    packet_output.ParseFromString(packet_str);
+    try {
+        packet_output.ParseFromString(packet_str);
+    
+        // Debug logs
+        if (this->debug)
+        {
+            std::cout << packet_output.DebugString() << std::endl;
+        } 
+        return true;
 
-      // Debug logs
-      if (this->debug)
-      {
-          std::cout << packet_output.DebugString() << std::endl;
-      } 
+    } catch (const std::exception &e)
+    {
+        std::cerr << this->formatErrorMessage(e.what()) << '\n';
+        return false;
+    }
 
     return false;
 }
