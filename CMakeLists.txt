@@ -86,7 +86,27 @@ target_link_libraries(udp_test
     libudp_sub
 )
 
-############# NAUTILUS Subscriber File
+############# Application Executable
+
+# Add executable for receiving messages
+add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+
+# Include MongoDB headers and libraries
+target_link_libraries(application
+    PRIVATE ${Protobuf_LIBRARIES}
+    libudp_sub
+    lib_security
+)
+
+##### Broadcast
+
+add_executable(receiver src/broadcast_receiver.cpp)
+
+add_executable(sender src/broadcast_sender.cpp)
+
+
+############# MongoApp Executable
 
 # Find and link MongoDB libraries
 find_package(PkgConfig REQUIRED)
@@ -94,13 +114,13 @@ pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
 pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
 
 # Add executable for testing pub/sub functionality
-add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_executable(mongo_app src/mongo_app.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 
 # Include MongoDB headers and libraries
-target_include_directories(application PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-target_link_directories(application PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
-target_link_libraries(application
+target_include_directories(mogo_app PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+target_link_directories(mongo_app PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
+target_link_libraries(mongo_app
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
     db_handler
@@ -109,7 +129,7 @@ target_link_libraries(application
     lib_security
 )
 
-target_compile_options(application PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
+target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
 set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 
 ##### Broadcast
@@ -117,6 +137,11 @@ set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 add_executable(receiver src/broadcast_receiver.cpp)
 
 add_executable(sender src/broadcast_sender.cpp)
+
+
+############# Relay Executable
+
+
 
 
 

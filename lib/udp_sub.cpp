@@ -61,6 +61,7 @@ std::string UDPSub::read()
 
     if (this->debug){
         std::cout << "Received message" << std::endl;
+        std::cout << "Message: " << received_message << std::endl;
     }
 
     return received_message;
