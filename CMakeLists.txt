@@ -35,9 +35,9 @@ add_library(libudp_sub
 
 
 # Find and link MongoDB libraries
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
-pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
+find_package(PkgConfig)
+pkg_check_modules(MONGOCXX libmongocxx)
+pkg_check_modules(BSONCXX libbsoncxx)
 
 # Enable MongoDB support only if both libraries are found
 if (MONGOCXX_FOUND AND BSONCXX_FOUND)
