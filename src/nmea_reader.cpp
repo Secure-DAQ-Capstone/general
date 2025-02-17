@@ -409,6 +409,8 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 
   *metadata_copy = *packet.mutable_metadata();
 
+  metadata_copy->set_nonce(nonce_str);
+
   encrypted_packet.set_allocated_metadata(metadata_copy);
   encrypted_packet.set_encrypted_payload(encrypted_payload_str);
 

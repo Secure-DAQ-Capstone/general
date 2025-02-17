@@ -45,7 +45,7 @@ message Packet {
 message MetaData
 {
   int32 board_id_msg_origin = 1;
-  int32 nonce = 2;
+  bytes nonce = 2;
   int32 time_received = 3;
   int32 time_sent = 4;
 }

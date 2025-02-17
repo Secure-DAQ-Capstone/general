@@ -28,15 +28,17 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
 
         // // Decrypt the payload
          //std::string payload_str = decryptString(encrypted_packet.encrypted_payload());
-    unsigned char nonce[crypto_secretbox_NONCEBYTES];
+    // unsigned char nonce[crypto_secretbox_NONCEBYTES];
     //Generate the nonce
-    symmetric_key_security_agent.generateNonce(nonce);
+    // symmetric_key_security_agent.generateNonce(nonce);
 
-    std::string nonce_str(nonce, nonce+crypto_secretbox_NONCEBYTES);
-
-    std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
     capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
     *metadata_copy = *encrypted_packet.mutable_metadata();
+    
+    std::string nonce_str = metadata_copy->nonce();
+
+    std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
+    
     packet_output.set_allocated_metadata(metadata_copy);
     capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
     payload->ParseFromString(payload_str);

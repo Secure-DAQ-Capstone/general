@@ -121,7 +121,6 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
   
   capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
   metadata->set_board_id_msg_origin(2);
-  metadata->set_nonce(1);
   packet.set_allocated_metadata(metadata);
 
   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
