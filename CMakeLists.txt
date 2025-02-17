@@ -49,9 +49,7 @@ else()
 endif()
 
 
-add_library(proto_json
-  lib/proto_json_converter.cpp
-)
+
 add_library(lib_security
   lib/security.cpp
 )
@@ -92,6 +90,10 @@ if (USE_MONGO)
 
   add_library(db_handler
   lib/mongodb_handler.cpp
+  )
+
+  add_library(proto_json
+  lib/proto_json_converter.cpp
   )
 
   #Include MongoDB headers and libraries for db_handler
