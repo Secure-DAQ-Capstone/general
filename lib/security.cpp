@@ -60,17 +60,7 @@ vector<unsigned char> security_base::decrypt(vector<unsigned char> ciphertext, i
 // Generates and returns a random nonce of crypto_secretbox_NONCEBYTES bytes.
 void security_base::generateNonce(unsigned char * nonce) 
 {
-    //TODO: Uncomment the randomized nonce
-    //randombytes_buf(nonce, sizeof nonce);
-    string nonce_string;
-    ifstream nonce_file("../nonce_boards.txt");
-    
-    getline(nonce_file, nonce_string);
-
-    for(int i = 0; i < crypto_secretbox_NONCEBYTES; i++)
-    {
-        nonce[i] = stoi(nonce_string.substr(i*2, 2), nullptr, 16);
-    }
+    randombytes_buf(nonce, sizeof nonce);
 }
 
 
