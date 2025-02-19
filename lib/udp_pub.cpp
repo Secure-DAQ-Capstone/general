@@ -1,6 +1,7 @@
 #include "udp_pub.h"
+#include "constants.h"
 
-UDPPub::UDPPub(size_t max_buffer_size, int port, const char* address, bool broadcast, bool debug)
+UDPPub::UDPPub(int port, const char* address, bool broadcast, bool debug)
 {
     this->broadcastEnable = broadcast;
     this->debug = debug;
@@ -11,7 +12,7 @@ UDPPub::UDPPub(size_t max_buffer_size, int port, const char* address, bool broad
     {
         throw std::runtime_error(formatErrorMessage("Error opening Socket"));
     }
-    this->max_buffer_size = max_buffer_size;
+    this->max_buffer_size = UDP_BUFFER_SIZE;
 
     /**
      * Started to implement broadcast, but it is not tested yet.

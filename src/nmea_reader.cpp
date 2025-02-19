@@ -409,6 +409,8 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 
   *metadata_copy = *packet.mutable_metadata();
 
+  metadata_copy->set_nonce(nonce_str);
+
   encrypted_packet.set_allocated_metadata(metadata_copy);
   encrypted_packet.set_encrypted_payload(encrypted_payload_str);
 
@@ -416,7 +418,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 }
 
 const bool UDP_DEBUG = true;
-UDPPub pub(UDP_BUFFER_SIZE, PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, false, true);
+UDPPub pub(PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, false, true);
 
 void udpSendString(std::string packet_str)
 {

@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         receive_port = std::stoi(argv[2]);
     }
 
-    Relay relay(max_buffer_size, receive_port , receive_ip, debug_application, debug_sub);
+    Relay relay(receive_port , receive_ip, debug_application, debug_sub);
 
     // run the loop
     while (true)

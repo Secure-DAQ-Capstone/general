@@ -8,7 +8,7 @@
 
 class Relay : public Application {
 public:
-    Relay(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
+    Relay(const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
 
     void relay_packet(const std::string &packet_str);
 

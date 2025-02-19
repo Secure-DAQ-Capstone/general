@@ -2,7 +2,7 @@
 #include "constants.h"
 
 // Constructor definition
-Relay::Relay(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub) : Application(max_buffer_size, receive_port, receive_ip, debug, debug_sub){}
+Relay::Relay(const int receive_port, const char* receive_ip, bool debug, bool debug_sub) : Application(receive_port, receive_ip, debug, debug_sub){}
 
 
 void Relay::relay_packet(const std::string &packet_str) {

@@ -11,8 +11,7 @@ int main()
     // Init Application
     bool debug_application = true;
     bool debug_sub = false;
-    size_t max_buffer_size = UDP_BUFFER_SIZE;
-    Application application(max_buffer_size, PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, debug_application, debug_sub);
+    Application application(PUBLISHER_PORT, GracesHouse::FaresLaptop, debug_application, debug_sub);
 
     // run the loop
     while (true)

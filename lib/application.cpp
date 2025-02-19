@@ -3,10 +3,11 @@
 #include "constants.h"
 #include "packet.pb.h"
 #include <iostream>
+#include <fstream>
 
 // Constructor
-Application::Application(size_t max_buffer_size, int receive_port, const char* receive_ip, bool debug, bool debug_sub)
-    : debug(debug), sub(max_buffer_size, receive_port, receive_ip, debug_sub)
+Application::Application(int receive_port, const char* receive_ip, bool debug, bool debug_sub)
+    : debug(debug), sub(receive_port, receive_ip, debug_sub)
 {
 }
 
@@ -22,17 +23,16 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         // Parse the string. Raises an error if the input cannot be parsed.
         encrypted_packet.ParseFromString(packet_str);
 
-        //Generate the nonce
-        unsigned char nonce[crypto_secretbox_NONCEBYTES];
-        symmetric_key_security_agent.generateNonce(nonce);
-        std::string nonce_str(nonce, nonce+crypto_secretbox_NONCEBYTES);
-
-        // Decrypt the payload
-        std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
-
         // Copy the metadata from the encrypted packet to the new packet
         capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
         *metadata_copy = *encrypted_packet.mutable_metadata();
+
+
+        // Get the nonce from the metadata
+        std::string nonce_str = metadata_copy->nonce();
+        
+        // Decrypt the payload
+        std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str);
 
         // Set the metadata of the new packet
         packet_output.set_allocated_metadata(metadata_copy);
@@ -48,7 +48,31 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
             std::cout << packet_output.DebugString() << std::endl;
         }   
 
-        return true;
+        std::string signature_str = metadata_copy->digital_signature();
+
+        std::string str_payload;
+        packet_output.payload().SerializeToString(&str_payload);
+
+        bool verified_signature = verifyDigitalSignature(str_payload, signature_str);
+
+        //If the signature is not verified, log the packet
+        if(!verified_signature)
+        {
+            std::string filename = "failed_messages.txt";
+            std::ofstream file(filename, std::ios::app);
+
+            if (!file.is_open()) {
+                std::cerr << "Failed to open file for appending: " << filename << std::endl;
+                return false;
+            }
+
+            file << packet_output.DebugString() << std::endl;
+
+            file.close();
+        }
+        
+
+        return verified_signature;
     }
     catch (const std::exception &e)
     {

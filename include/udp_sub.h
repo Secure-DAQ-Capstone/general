@@ -12,7 +12,7 @@ class UDPSub
 public:
     UDPSub() = delete; // prevent usage of default constructor
 
-    UDPSub(size_t max_buffer_size, int port, const char* address, bool debug = false);
+    UDPSub(int port, const char* address, bool debug = false);
 
     std::string readPretty();
 

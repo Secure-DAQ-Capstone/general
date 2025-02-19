@@ -29,7 +29,9 @@ typedef struct {
 tSocketStream serStream; 
 std::vector<int> PGNS;
 
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
+security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
+
+security_base signer_security_agent("../private_key_boards.txt", 1);
 
 // TODO - Temporary Implementations **********************************************************************
 //Call the encryption function from the security class
@@ -87,8 +89,17 @@ void udpSendStringToFile(std::string str)
 
 std::string getDigitalSignature(capstone_protobuf::Packet& packet)
 {
-    return "12345"; // TODO
+    std::string str_payload;
+    packet.payload().SerializeToString(&str_payload);
+    
+    unsigned char digital_signature[crypto_sign_BYTES];
+
+    signer_security_agent.generateSignature((unsigned char*) str_payload.data(), str_payload.length(), digital_signature);
+
+    string digital_signature_str(reinterpret_cast<const char*>(digital_signature), crypto_sign_BYTES); 
+    return digital_signature_str;
 }
+
 //********************************************************************************************* */
 
 void Temperature(const tN2kMsg &N2kMsg);
@@ -121,7 +132,6 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
   
   capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
   metadata->set_board_id_msg_origin(2);
-  metadata->set_nonce(1);
   packet.set_allocated_metadata(metadata);
 
   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
@@ -139,7 +149,7 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
 
   packet.set_allocated_payload(payload); // Ownership transferred to packet
 
-  payload->set_digital_signature(getDigitalSignature(packet));
+  metadata->set_digital_signature(getDigitalSignature(packet));
 
   return packet;
 }

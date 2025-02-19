@@ -4,11 +4,11 @@
 #include <iostream>
 #include <thread>
 
-void runSubscriber(size_t buffer_size, int port, const char *address)
+void runSubscriber(int port, const char *address)
 {
     try
     {
-        UDPSub subscriber(buffer_size, port, address);
+        UDPSub subscriber(port, address);
         while (true)
         {
             std::string message = subscriber.read();
@@ -21,11 +21,11 @@ void runSubscriber(size_t buffer_size, int port, const char *address)
     }
 }
 
-void runPublisher(size_t buffer_size, int port, const char *address, bool enable_broadcast, bool debug)
+void runPublisher(int port, const char *address, bool enable_broadcast, bool debug)
 {
     try
     {
-        UDPPub publisher(buffer_size, port, address, enable_broadcast, debug);
+        UDPPub publisher(port, address, enable_broadcast, debug);
         std::string message;
         while (true)
         {
@@ -79,11 +79,11 @@ int main(int argc, char *argv[])
     std::string role = argv[1];
     if (role == "sub")
     {
-        runSubscriber(buffer_size, port, sub_local_address);
+        runSubscriber( port, sub_local_address);
     }
     else if (role == "pub")
     {
-        runPublisher(buffer_size, port, sendto_address, false, true);
+        runPublisher(port, sendto_address, false, true);
     }
     else
     {
