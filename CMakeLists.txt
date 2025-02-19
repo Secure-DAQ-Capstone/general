@@ -12,6 +12,13 @@ find_package(Sodium REQUIRED)
 include_directories(${sodium_INCLUDE_DIR})
 message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+# Compiler flags for Debug build
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
 
