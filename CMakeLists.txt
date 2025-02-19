@@ -105,7 +105,8 @@ target_link_libraries(nmea_reader
     constants
 )
 
-set_source_files_properties(nmea_reader.cpp PROPERTIES COMPILE_FLAGS "-g -O0")
+target_compile_options(nmea_reader PRIVATE -g -O0)
+
 
 ############## udp_test file
 
