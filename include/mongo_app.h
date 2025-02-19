@@ -2,6 +2,7 @@
 #define MONGO_APP_H
 
 #include "application.h"
+#include "proto_json_converter.h"
 #include "mongodb_handler.h"
 
 class MongoApp : public Application {

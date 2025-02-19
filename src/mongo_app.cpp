@@ -3,7 +3,7 @@
 
 // Constructor definition
 MongoApp::MongoApp(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub)
-    : Application(max_buffer_size, receive_port, receive_ip, debug, debug_sub) {
+    : Application(receive_port, receive_ip, debug, debug_sub) {
     if (debug) {
         std::cout << "MongoDB App initialized" << std::endl;
     }
