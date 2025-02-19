@@ -7,7 +7,7 @@
 using namespace std;
 
 //Initialize Sodium
-security_base::security_base(string stored_key_path) 
+security_base::security_base(string stored_key_path, int type) 
 {
     sodium_init();
 
@@ -18,12 +18,30 @@ security_base::security_base(string stored_key_path)
     
     getline(key_file, key_string);
     
-    for(int i = 0; i < crypto_secretbox_KEYBYTES; i++)
+    int key_size;
+
+    switch(type)
+    {
+        case 0:
+            key_size = crypto_secretbox_KEYBYTES;
+            break;
+        case 1:
+            key_size = crypto_sign_SECRETKEYBYTES;
+            break;
+        case 2:
+            key_size = crypto_sign_PUBLICKEYBYTES;
+            break;
+        default:
+            key_size = crypto_secretbox_KEYBYTES;
+    }
+
+    key = new unsigned char[key_size];
+    
+    for(int i = 0; i < key_size; i++)
     {
         this->key[i] = stoi(key_string.substr(i*2, 2), nullptr, 16);
     }	
-}
-    
+}    
 // Encrypts a plaintext string using the provided key.
 vector<unsigned char> security_base::encrypt(const unsigned char * plaintext, int plaintext_len, unsigned char nonce[crypto_secretbox_NONCEBYTES]) 
 {
@@ -62,5 +80,27 @@ void security_base::generateNonce(unsigned char * nonce)
 {
     randombytes_buf(nonce, sizeof nonce);
 }
+
+//Generates a digital signature for the data
+void security_base::generateSignature(const unsigned char* msg, int msg_len, unsigned char* sig)
+{
+    //The key in this function will be the private key
+    crypto_sign_detached(sig, NULL, msg, msg_len, this->key);
+}
+
+//Verifies the digital signature
+bool security_base::verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len)
+{
+    //The key in this function will be the public key
+    if(crypto_sign_verify_detached(sig, msg, msg_len, this->key) != 0) 
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 
 

@@ -29,7 +29,11 @@ typedef struct {
 tSocketStream serStream; 
 std::vector<int> PGNS;
 
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
+security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
+
+security_base signer_security_agent("../private_key_boards.txt", 1);
+
+security_base signature_verifier_security_agent("../public_key_boards.txt", 2);
 
 // TODO - Temporary Implementations **********************************************************************
 //Call the encryption function from the security class
@@ -87,7 +91,28 @@ void udpSendStringToFile(std::string str)
 
 std::string getDigitalSignature(capstone_protobuf::Packet& packet)
 {
-    return "12345"; // TODO
+    std::string str_payload;
+    packet.payload().SerializeToString(&str_payload);
+    
+    vector<unsigned char> digital_signature;
+
+    signer_security_agent.generateSignature((unsigned char*) str_payload.data(), str_payload.length(), digital_signature.data());
+
+    string digital_signature_str((const char*)(digital_signature.data()),  digital_signature.size()); 
+    return digital_signature_str;
+}
+
+bool verifyDigitalSignature(std::string data, std::string signature)
+{
+
+  unsigned char sig[crypto_sign_BYTES];
+
+  //Conver the signature string into an array of unsigned characters
+  copy(signature.begin(), signature.end(), sig);
+
+  bool verified = signature_verifier_security_agent.verifySignature(sig, (unsigned char*)data.data(), data.length());
+
+  return verified;
 }
 //********************************************************************************************* */
 

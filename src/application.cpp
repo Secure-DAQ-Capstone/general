@@ -65,7 +65,27 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         //     std::cout << packet_output.DebugString() << std::endl;
         // }
 
-        return true;
+        std::string signature_str = packet_output.digital_signature();
+        bool verified_signature = verifyDigitalSignature(payload_str, signature_str);
+
+        //If the signature is not verified, log the packet
+        if(!verified_signature)
+        {
+            std::string filename = "failed_messages.txt";
+            std::ofstream file(filename, std::ios::app);
+
+            if (!file.is_open()) {
+                std::cerr << "Failed to open file for appending: " << filename << std::endl;
+                return;
+            }
+
+            file << packet_output.DebugString() << std::endl;
+
+            file.close();
+        }
+        
+
+        return verified_signature;
     }
     catch (const std::exception &e)
     {
