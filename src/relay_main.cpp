@@ -26,7 +26,13 @@ int main(int argc, char *argv[])
         std::cout << "Receive Port: " << receive_port << std::endl;
     }
 
-    Relay relay(receive_port, receive_ip, debug_application, debug_sub);
+    // Publisher
+    const char *publish_ip = GracesHouse::Ventana1_ETH1;
+    int publish_port = PUBLISHER_PORT;
+
+    Config config(receive_port, receive_ip, GracesHouse::Ventana1_ETH1, PUBLISHER_PORT);
+
+    Relay relay(config, debug_application, debug_sub);
 
     // run the loop
     while (true)

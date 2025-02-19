@@ -183,6 +183,7 @@ add_library(base
 target_link_libraries(relay_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
+  libudp_pub
   relay
   base
 )

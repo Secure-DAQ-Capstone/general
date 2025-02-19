@@ -2,7 +2,9 @@
 #include "constants.h"
 
 // Constructor definition
-Relay::Relay(const int receive_port, const char *receive_ip, bool debug, bool debug_sub) : Base(receive_port, receive_ip, debug, debug_sub) {}
+Relay::Relay(const Config &config, bool debug, bool debug_sub)
+    : Base(config.receive_port, config.receive_ip, debug, debug_sub),
+      pub(config.publish_port, config.publish_ip) {}
 
 void Relay::relay_packet(const std::string &packet_str)
 {
@@ -15,9 +17,19 @@ void Relay::relay_packet(const std::string &packet_str)
     {
         std::cerr << "Failed to parse and relay packet." << std::endl;
     }
+    else
+    {
+        // Edit the packet metadata
+        edit_packet_metadata(encrypted_packet);
+
+        // Send the packet
+        std::string packet_str;
+        encrypted_packet.SerializeToString(&packet_str);
+        pub.write(packet_str);
+    }
 }
 
-void edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
+void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
 {
     // Edit the packet metadata
     std::cout << "Edit the packet" << std::endl;
