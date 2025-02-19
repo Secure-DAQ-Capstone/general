@@ -149,7 +149,7 @@ capstone_protobuf::Packet generatePacket(google::protobuf::Timestamp *timestamp,
 
   packet.set_allocated_payload(payload); // Ownership transferred to packet
 
-  payload->set_digital_signature(getDigitalSignature(packet));
+  metadata->set_digital_signature(getDigitalSignature(packet));
 
   return packet;
 }
