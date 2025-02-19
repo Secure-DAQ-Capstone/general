@@ -1,6 +1,7 @@
 #include "udp_sub.h"
+#include "constants.h"
 
-UDPSub::UDPSub(size_t max_buffer_size, int port, const char* address, bool debug)
+UDPSub::UDPSub(int port, const char* address, bool debug)
 : debug(debug)
 {
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -8,7 +9,7 @@ UDPSub::UDPSub(size_t max_buffer_size, int port, const char* address, bool debug
     {
         throw std::runtime_error(formatErrorMessage("Error opening Socket"));
     }
-    this->max_buffer_size = max_buffer_size;
+    this->max_buffer_size = UDP_BUFFER_SIZE;
 
     /**
      * Bind the socket to an address and port.
@@ -61,6 +62,7 @@ std::string UDPSub::read()
 
     if (this->debug){
         std::cout << "Received message" << std::endl;
+        std::cout << "Message: " << received_message << std::endl;
     }
 
     return received_message;

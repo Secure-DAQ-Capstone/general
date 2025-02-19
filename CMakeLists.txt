@@ -49,12 +49,16 @@ else()
 endif()
 
 
+# Parameters
+set(USE_BROADCAST OFF)
 
-add_library(lib_security
+
+
+add_library(security STATIC
   lib/security.cpp
 )
 
-target_link_libraries(lib_security
+target_link_libraries(security
   PRIVATE ${sodium_LIBRARIES}
 )
 
@@ -70,7 +74,7 @@ target_link_libraries(nmea_reader
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_pub
     libudp_sub
-    lib_security
+    security
 )
 
 ############## udp_test file
@@ -84,7 +88,7 @@ target_link_libraries(udp_test
     libudp_sub
 )
 
-############# NAUTILUS Subscriber File
+############# MongoApp File
 
 if (USE_MONGO)
 
@@ -108,31 +112,75 @@ if (USE_MONGO)
   pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
 
   #Add executable for testing pub/sub functionality
-  add_executable(application src/application.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+  add_executable(mongo_app src/mongo_app.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 
   #Include MongoDB headers and libraries
-  target_include_directories(application PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-  target_link_directories(application PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
-  target_link_libraries(application
+  target_include_directories(mongo_app PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+  target_link_directories(mongo_app PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
+  target_link_libraries(mongo_app
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
     db_handler
     proto_json
     PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
-    lib_security
+    security
   )
 
-  target_compile_options(application PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
+  target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
   set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 
 endif()
+
+
 ##### Broadcast
 
-add_executable(receiver src/broadcast_receiver.cpp)
+if (USE_BROADCAST)
 
-add_executable(sender src/broadcast_sender.cpp)
+  add_executable(receiver src/broadcast_receiver.cpp)
+
+  add_executable(sender src/broadcast_sender.cpp)
+
+endif()
 
 
+############# main Application File
+
+#Add executable
+add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+add_library(application
+  lib/application.cpp
+  )
+
+add_library(constants
+  lib/constants.cpp
+  )
+
+target_link_libraries(app_main
+  PRIVATE ${Protobuf_LIBRARIES}
+  libudp_sub
+  application
+  security
+  constants
+)
 
 
+############# Relay File
+
+#Add executable
+add_executable(relay_main src/relay_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+
+add_library(relay
+  lib/relay.cpp
+  )
+
+target_link_libraries(relay_main
+  PRIVATE ${Protobuf_LIBRARIES}
+  libudp_sub
+  relay
+  application
+  security
+  constants
+)

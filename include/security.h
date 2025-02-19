@@ -1,5 +1,5 @@
-#ifndef SECURITY_BASE_H
-#define SECURITY_BASE_H
+#ifndef SECURITY_H
+#define SECURITY_H
 
 #include <sodium.h>
 #include <string>
@@ -30,4 +30,4 @@ public:
     bool verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len);
 };
 
-#endif // SECURITY_BASE_H
+#endif // SECURITY_H

@@ -5,34 +5,39 @@
 #include "udp_sub.h"
 #include "packet.pb.h"
 #include "security.h"
+#include "constants.h"
 #include <vector>
 
 using namespace std;
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
-
-security_base signature_verifier_security_agent("../public_key_boards.txt", 2);
 
 class Application
 {
 public:
-    Application(bool debug, bool debug_sub);
-    void update();
+    Application(const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
+    
+    // Declare as virtual for the relay node
+    virtual void update(); 
 
+    // Get a decrypted packet from the UDPSub. The packet_out is where the completed packet will be stored.
     bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet &packet_output);
+
+    // Get an encrypted packet from the UDPSub
+    bool get_encrypted_proto_packet(std::string packet_str, capstone_protobuf::EncryptedPacket &packet_output);
 
     std::string decryptString(std::string str, std::string nonce_str)
     {
-    unsigned char nonce[crypto_secretbox_NONCEBYTES];
-    
-    //Convert the nonce string to a char array
-    copy(nonce_str.begin(), nonce_str.end(), nonce);
+        unsigned char nonce[crypto_secretbox_NONCEBYTES];
+        
+        //Convert the nonce string to a char array
+        copy(nonce_str.begin(), nonce_str.end(), nonce);
 
-    //Decrypt the data
-    vector<unsigned char> decrypted_array(str.begin(), str.end());
-    vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
-    string decrypted_str(decrypted.begin(), decrypted.end());
+        //Decrypt the data
+        vector<unsigned char> decrypted_array(str.begin(), str.end());
+        // Should be defined globally
+        vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
+        string decrypted_str(decrypted.begin(), decrypted.end());
 
-    return decrypted_str;
+        return decrypted_str;
     }
 
     bool verifyDigitalSignature(std::string data, std::string signature)
@@ -48,14 +53,16 @@ public:
         return verified;
     }
 
-private:
-    const bool UDP_DEBUG = true;
-    UDPSub sub;
+protected:
     bool debug;
+    UDPSub sub;
+
+    
+private:
 
     std::string formatErrorMessage(const std::string &message) const
     {
-        return "UDPPub: " + message;
+        return "Application: " + message;
     }
 };
 
