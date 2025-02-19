@@ -188,13 +188,13 @@ capstone_protobuf::Packet generatePacket(
 template <typename T>
 void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_data, std::string label, int original_msg_id, const void *original_msg, int msg_len)
 {
-  capstone_protobuf::MetaData metadata = new capstone_protobuf::MetaData();
-  generateMetaData(BOARD_ID_1, 12345, 0000, &metadata);
+  capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
+  generateMetaData(BOARD_ID_1, 12345, 0000, metadata);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,
       original_msg, msg_len,
-      &metadata);
+      metadata);
   capstone_protobuf::EncryptedPacket encrypted_packet = encryptPayload(packet);
   udpSend(encrypted_packet);
 }
