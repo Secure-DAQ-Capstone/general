@@ -143,7 +143,7 @@ struct PacketArgs
 capstone_protobuf::MetaData generateMetaData(
     int32_t board_id,
     int32_t time_received,
-    int32_t time_sent = 0)
+    int32_t time_sent)
 {
   capstone_protobuf::MetaData metadata;
   metadata.set_time_received(time_received);
@@ -155,7 +155,7 @@ capstone_protobuf::MetaData generateMetaData(
   entry->set_board_id(board_id);
   entry->set_timestamp(time_received);
 
-  return metadata;
+  return std::move(metadata);
 }
 
 template <typename T>
