@@ -1,7 +1,7 @@
 #include "udp_pub.h"
 #include "constants.h"
 
-UDPPub::UDPPub(int port, const char *address, bool broadcast, bool debug)
+UDPPub::UDPPub(int port, const char *address, bool debug, bool broadcast)
 {
     this->broadcastEnable = broadcast;
     this->debug = debug;

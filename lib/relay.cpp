@@ -4,7 +4,7 @@
 // Constructor definition
 Relay::Relay(const Config &config, bool debug, bool debug_sub)
     : Base(config.receive_port, config.receive_ip, debug, debug_sub),
-      pub(config.publish_port, config.publish_ip) {}
+      pub(config.publish_port, config.publish_ip, debug_sub) {}
 
 void Relay::relay_packet(const std::string &packet_str)
 {

@@ -8,10 +8,10 @@ int main(int argc, char *argv[])
 
     // Init Application
     bool debug_application = true;
-    bool debug_sub = false;
+    bool debug_sub = true;
 
     // defaults for command line arguments
-    const char *receive_ip = GracesHouse::Ventana1_ETH1;
+    const char *receive_ip = GracesHouse::MattLinux;
     int receive_port = PUBLISHER_PORT;
 
     // Parse command-line arguments
