@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "packet.pb.h"
 #include <iostream>
+#include <fstream>
 
 // Constructor
 Application::Application(bool debug, bool debug_sub)
@@ -65,7 +66,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         //     std::cout << packet_output.DebugString() << std::endl;
         // }
 
-        std::string signature_str = packet_output.digital_signature();
+        std::string signature_str = payload->digital_signature();
         bool verified_signature = verifyDigitalSignature(payload_str, signature_str);
 
         //If the signature is not verified, log the packet
@@ -76,7 +77,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
 
             if (!file.is_open()) {
                 std::cerr << "Failed to open file for appending: " << filename << std::endl;
-                return;
+                return false;
             }
 
             file << packet_output.DebugString() << std::endl;

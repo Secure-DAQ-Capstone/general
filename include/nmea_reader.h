@@ -33,8 +33,6 @@ security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
 
 security_base signer_security_agent("../private_key_boards.txt", 1);
 
-security_base signature_verifier_security_agent("../public_key_boards.txt", 2);
-
 // TODO - Temporary Implementations **********************************************************************
 //Call the encryption function from the security class
 encryption_data_t encryptString(std::string str)
@@ -102,18 +100,6 @@ std::string getDigitalSignature(capstone_protobuf::Packet& packet)
     return digital_signature_str;
 }
 
-bool verifyDigitalSignature(std::string data, std::string signature)
-{
-
-  unsigned char sig[crypto_sign_BYTES];
-
-  //Conver the signature string into an array of unsigned characters
-  copy(signature.begin(), signature.end(), sig);
-
-  bool verified = signature_verifier_security_agent.verifySignature(sig, (unsigned char*)data.data(), data.length());
-
-  return verified;
-}
 //********************************************************************************************* */
 
 void Temperature(const tN2kMsg &N2kMsg);
