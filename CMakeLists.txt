@@ -16,8 +16,24 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+
+
+####### DEBUG EXAMPLES  ------------------------------
+
 # Compiler flags for Debug build
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+# set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+
+# Apply debug flags ONLY to debug_this.cpp
+# set_source_files_properties(debug_this.cpp PROPERTIES COMPILE_FLAGS "-g -O0")
+
+# Executable WITH debug symbols
+# add_executable(MyDebugApp debug_main.cpp)
+
+# Apply debug flags ONLY to MyDebugApp
+# target_compile_options(MyDebugApp PRIVATE -g -O0)
+
+
+############# END Debug Examples ----------------------------------
 
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
@@ -83,6 +99,8 @@ target_link_libraries(nmea_reader
     libudp_sub
     security
 )
+
+set_source_files_properties(nmea_reader.cpp PROPERTIES COMPILE_FLAGS "-g -O0")
 
 ############## udp_test file
 
