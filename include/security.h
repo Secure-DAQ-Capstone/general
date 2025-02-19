@@ -1,5 +1,5 @@
-#ifndef SECURITY_BASE_H
-#define SECURITY_BASE_H
+#ifndef SECURITY_H
+#define SECURITY_H
 
 #include <sodium.h>
 #include <string>
@@ -24,4 +24,4 @@ public:
     void generateNonce(unsigned char* nonce);
 };
 
-#endif // SECURITY_BASE_H
+#endif // SECURITY_H
