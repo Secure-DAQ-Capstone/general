@@ -27,7 +27,6 @@ message Packet {
     OriginalProtocol protocol = 3;
     bytes original_message = 4;
     int64 original_message_id = 5;
-    bytes digital_signature = 6;
 
     message Data {
       string label = 1;
@@ -45,7 +44,7 @@ message Packet {
 message MetaData
 {
   int32 board_id_msg_origin = 1;
-  int32 nonce = 2;
+  bytes nonce = 2;
   int32 time_received = 3;
   int32 time_sent = 4;
 
@@ -59,6 +58,7 @@ message MetaData
 
   // Add a repeated field for the RelayChainEntry. 
   repeated RelayChainEntry relay_chain = 5;
+  bytes digital_signature = 6;
 }
 
 

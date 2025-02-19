@@ -40,6 +40,19 @@ public:
         return decrypted_str;
     }
 
+    bool verifyDigitalSignature(std::string data, std::string signature)
+    {
+
+        unsigned char sig[crypto_sign_BYTES];
+
+        // Conver the signature string into an array of unsigned characters
+        copy(signature.begin(), signature.end(), sig);
+
+        bool verified = signature_verifier_security_agent.verifySignature(sig, (unsigned char *)data.data(), data.length());
+
+        return verified;
+    }
+
 protected:
     bool debug;
     UDPSub sub;

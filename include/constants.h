@@ -14,6 +14,7 @@ struct GracesHouse
     // Personals
     static constexpr const char *GraceLaptop = "192.168.2.56";
     static constexpr const char *MattLinux = "192.168.2.137";
+    static constexpr const char *FaresLaptop = "192.168.2.127";
 };
 
 struct MattsHouse
@@ -22,12 +23,14 @@ struct MattsHouse
     static constexpr int BROADCAST_PORT = 12345;
 };
 
-static constexpr const char *LOOPBACK_IP = "192.168.2.56";
+static constexpr const char *LOOPBACK_IP = "127.0.0.1";
 
 #define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080
 
 extern security_base symmetric_key_security_agent;
+extern security_base signature_verifier_security_agent;
+
 struct Config
 {
     int receive_port;

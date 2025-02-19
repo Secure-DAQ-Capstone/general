@@ -32,7 +32,9 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt");
+security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
+
+security_base signer_security_agent("../private_key_boards.txt", 1);
 
 // TODO - Temporary Implementations **********************************************************************
 // Call the encryption function from the security class
@@ -91,8 +93,17 @@ void udpSendStringToFile(std::string str)
 
 std::string getDigitalSignature(capstone_protobuf::Packet &packet)
 {
-  return "12345"; // TODO
+  std::string str_payload;
+  packet.payload().SerializeToString(&str_payload);
+
+  unsigned char digital_signature[crypto_sign_BYTES];
+
+  signer_security_agent.generateSignature((unsigned char *)str_payload.data(), str_payload.length(), digital_signature);
+
+  string digital_signature_str(reinterpret_cast<const char *>(digital_signature), crypto_sign_BYTES);
+  return digital_signature_str;
 }
+
 //********************************************************************************************* */
 
 void Temperature(const tN2kMsg &N2kMsg);
@@ -131,28 +142,18 @@ struct PacketArgs
 
 capstone_protobuf::MetaData generateMetaData(
     int32_t board_id,
-    int32_t nonce,
     int32_t time_received,
-    // const std::vector<capstone_protobuf::MetaData::RelayChainEntry> &relay_chain_entries,
     int32_t time_sent = 0)
 {
   capstone_protobuf::MetaData metadata;
   metadata.set_time_received(time_received);
   metadata.set_time_sent(time_sent);
   metadata.set_board_id_msg_origin(board_id);
-  metadata.set_nonce(nonce);
 
   // Make and add a relay chain entry
   capstone_protobuf::MetaData::RelayChainEntry *entry = metadata.add_relay_chain();
   entry->set_board_id(board_id);
   entry->set_timestamp(time_received);
-
-  // Add relay chain entries to metadata
-  // for (const auto &entry : relay_chain_entries)
-  // {
-  //   capstone_protobuf::MetaData::RelayChainEntry *new_entry = metadata.add_relay_chain();
-  //   new_entry->CopyFrom(entry);
-  // }
 
   return metadata;
 }
@@ -167,7 +168,6 @@ capstone_protobuf::Packet generatePacket(
     capstone_protobuf::MetaData *metadata)
 {
   capstone_protobuf::Packet packet;
-
   packet.set_allocated_metadata(metadata);
 
   capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
@@ -184,7 +184,7 @@ capstone_protobuf::Packet generatePacket(
 
   packet.set_allocated_payload(payload); // Ownership transferred to packet
 
-  payload->set_digital_signature(getDigitalSignature(packet));
+  metadata->set_digital_signature(getDigitalSignature(packet));
 
   return packet;
 }
@@ -192,7 +192,7 @@ capstone_protobuf::Packet generatePacket(
 template <typename T>
 void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_data, std::string label, int original_msg_id, const void *original_msg, int msg_len)
 {
-  capstone_protobuf::MetaData metadata = generateMetaData(BOARD_ID_1, 12345, 0000, 0000);
+  capstone_protobuf::MetaData metadata = generateMetaData(BOARD_ID_1, 12345, 0000);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,
