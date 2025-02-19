@@ -176,11 +176,13 @@ add_library(relay
   lib/relay.cpp
   )
 
+add_library(base
+  lib/base_subscriber.cpp
+  )
+
 target_link_libraries(relay_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
   relay
-  application
-  security
-  constants
+  base
 )

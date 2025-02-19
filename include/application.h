@@ -13,10 +13,10 @@ using namespace std;
 class Application
 {
 public:
-    Application(size_t max_buffer_size, const int receive_port, const char* receive_ip, bool debug, bool debug_sub);
-    
+    Application(const int receive_port, const char *receive_ip, bool debug, bool debug_sub);
+
     // Declare as virtual for the relay node
-    virtual void update(); 
+    virtual void update();
 
     // Get a decrypted packet from the UDPSub. The packet_out is where the completed packet will be stored.
     bool get_proto_packet(std::string packet_str, capstone_protobuf::Packet &packet_output);
@@ -27,11 +27,11 @@ public:
     std::string decryptString(std::string str, std::string nonce_str)
     {
         unsigned char nonce[crypto_secretbox_NONCEBYTES];
-        
-        //Convert the nonce string to a char array
+
+        // Convert the nonce string to a char array
         copy(nonce_str.begin(), nonce_str.end(), nonce);
 
-        //Decrypt the data
+        // Decrypt the data
         vector<unsigned char> decrypted_array(str.begin(), str.end());
         // Should be defined globally
         vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
@@ -40,14 +40,11 @@ public:
         return decrypted_str;
     }
 
-    
 protected:
     bool debug;
     UDPSub sub;
 
-    
 private:
-
     std::string formatErrorMessage(const std::string &message) const
     {
         return "Application: " + message;
