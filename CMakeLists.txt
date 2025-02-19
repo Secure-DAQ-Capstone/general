@@ -90,6 +90,10 @@ target_link_libraries(security
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
+add_library(constants
+  lib/constants.cpp
+  )
+
 # Link libraries
 target_link_libraries(nmea_reader
     PRIVATE nmea2000
@@ -98,6 +102,7 @@ target_link_libraries(nmea_reader
     libudp_pub
     libudp_sub
     security
+    constants
 )
 
 set_source_files_properties(nmea_reader.cpp PROPERTIES COMPILE_FLAGS "-g -O0")
@@ -176,10 +181,6 @@ add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 add_library(application
   lib/application.cpp
-  )
-
-add_library(constants
-  lib/constants.cpp
   )
 
 target_link_libraries(app_main
