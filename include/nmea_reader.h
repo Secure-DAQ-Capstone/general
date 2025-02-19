@@ -92,11 +92,11 @@ std::string getDigitalSignature(capstone_protobuf::Packet& packet)
     std::string str_payload;
     packet.payload().SerializeToString(&str_payload);
     
-    vector<unsigned char> digital_signature;
+    unsigned char digital_signature[crypto_sign_BYTES];
 
-    signer_security_agent.generateSignature((unsigned char*) str_payload.data(), str_payload.length(), digital_signature.data());
+    signer_security_agent.generateSignature((unsigned char*) str_payload.data(), str_payload.length(), digital_signature);
 
-    string digital_signature_str((const char*)(digital_signature.data()),  digital_signature.size()); 
+    string digital_signature_str(reinterpret_cast<const char*>(digital_signature), crypto_sign_BYTES); 
     return digital_signature_str;
 }
 
