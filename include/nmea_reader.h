@@ -32,8 +32,6 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
-security_base symmetric_key_security_agent("../symmetric_key_boards.txt", 0);
-
 security_base signer_security_agent("../private_key_boards.txt", 1);
 
 // TODO - Temporary Implementations **********************************************************************
@@ -140,22 +138,20 @@ struct PacketArgs
       : timestamp(ts), label(lbl), original_msg_id(msg_id), original_msg(orig_msg), msg_len(len), relay_chain_entries(entries) {}
 };
 
-capstone_protobuf::MetaData generateMetaData(
+void generateMetaData(
     int32_t board_id,
     int32_t time_received,
-    int32_t time_sent)
+    int32_t time_sent,
+    capstone_protobuf::MetaData *metadata)
 {
-  capstone_protobuf::MetaData metadata;
-  metadata.set_time_received(time_received);
-  metadata.set_time_sent(time_sent);
-  metadata.set_board_id_msg_origin(board_id);
+  metadata->set_time_received(time_received);
+  metadata->set_time_sent(time_sent);
+  metadata->set_board_id_msg_origin(board_id);
 
   // Make and add a relay chain entry
-  capstone_protobuf::MetaData::RelayChainEntry *entry = metadata.add_relay_chain();
+  capstone_protobuf::MetaData::RelayChainEntry *entry = metadata->add_relay_chain();
   entry->set_board_id(board_id);
   entry->set_timestamp(time_received);
-
-  return std::move(metadata);
 }
 
 template <typename T>
@@ -192,7 +188,8 @@ capstone_protobuf::Packet generatePacket(
 template <typename T>
 void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_data, std::string label, int original_msg_id, const void *original_msg, int msg_len)
 {
-  capstone_protobuf::MetaData metadata = generateMetaData(BOARD_ID_1, 12345, 0000);
+  capstone_protobuf::MetaData metadata;
+  generateMetaData(BOARD_ID_1, 12345, 0000, &metadata);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,
