@@ -39,4 +39,9 @@ struct Config
         : receive_port(r_port), receive_ip(r_ip), publish_ip(p_ip), publish_port(p_port) {}
 };
 
+#define BOARD_ID_1 1
+#define BOARD_ID_2 2
+#define BOARD_ID_3 3
+#define BOARD_ID_4 4
+
 #endif // CONSTANTS_H

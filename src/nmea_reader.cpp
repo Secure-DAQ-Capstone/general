@@ -447,7 +447,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 }
 
 const bool UDP_DEBUG = true;
-UDPPub pub(PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, false, true);
+UDPPub pub(PUBLISHER_PORT, GracesHouse::MattLinux, false, true);
 
 void udpSendString(std::string packet_str)
 {
@@ -497,7 +497,7 @@ void udpSend(capstone_protobuf::EncryptedPacket &encrypted_packet)
   return;
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -518,6 +518,22 @@ int main(void)
 
   cout << endl
        << "CAN started, going to watch it now" << endl;
+
+  // defaults for command line arguments
+  const char *publish_ip = GracesHouse::Ventana1_ETH1;
+  int publish_port = PUBLISHER_PORT;
+
+  // Parse command-line arguments
+  if (argc > 1)
+  {
+    publish_ip = argv[1];
+    std::cout << "Receive IP: " << publish_ip << std::endl;
+  }
+  if (argc > 2)
+  {
+    publish_port = std::stoi(argv[2]);
+    std::cout << "Receive Port: " << publish_port << std::endl;
+  }
 
   while (1)
   {
