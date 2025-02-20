@@ -47,6 +47,17 @@ message MetaData
   bytes nonce = 2;
   int32 time_received = 3;
   int32 time_sent = 4;
+
+  // Defined the Relay Chain
+  message RelayChainEntry {
+    int32 board_id = 1;
+    // the timestamp is neither the time sent or received, it is mainly the time
+    // time the packet metadata was touched by the node.
+    int32 timestamp = 2; 
+  }
+
+  // Add a repeated field for the RelayChainEntry. 
+  repeated RelayChainEntry relay_chain = 5;
   bytes digital_signature = 6;
 }
 

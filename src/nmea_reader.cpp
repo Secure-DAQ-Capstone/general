@@ -2,21 +2,20 @@
 #include "constants.h"
 // #include <N2kMessagesEnumToStr.h>
 
-tNMEA2000Handler NMEA2000Handlers[]={
-  {130310L,&OutsideEnvironmental}, //works
-  {130312L,&Temperature}, //works
-  {130311L,&OutsideEnvironmental2}, //only temp works
-  {127250L,&VesselHeading}, // works but GPS doesn't change data value
-  {129025L, &PositionRapid}, //works
-  {127258L, &MagneticVariation}, // works
-  {130316L, &TemperatureExt},//works
-  {129026L, &COGSOGRapid}, // works
-  {126992L, &SysTime}, // works
-  {129029L, &GNSSPosition}, // works
-  {129540L, &SatsInView}, // failed to parse
-  {130306L, &WindData}, //works
-  {0,0}
-};
+tNMEA2000Handler NMEA2000Handlers[] = {
+    {130310L, &OutsideEnvironmental},  // works
+    {130312L, &Temperature},           // works
+    {130311L, &OutsideEnvironmental2}, // only temp works
+    {127250L, &VesselHeading},         // works but GPS doesn't change data value
+    {129025L, &PositionRapid},         // works
+    {127258L, &MagneticVariation},     // works
+    {130316L, &TemperatureExt},        // works
+    {129026L, &COGSOGRapid},           // works
+    {126992L, &SysTime},               // works
+    {129029L, &GNSSPosition},          // works
+    {129540L, &SatsInView},            // failed to parse
+    {130306L, &WindData},              // works
+    {0, 0}};
 
 // Handlers************************************************************************************************
 void OutsideEnvironmental(const tN2kMsg &N2kMsg)
@@ -123,7 +122,8 @@ void Temperature(const tN2kMsg &N2kMsg)
   }
 }
 
-void TemperatureExt(const tN2kMsg &N2kMsg) {
+void TemperatureExt(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -134,18 +134,22 @@ void TemperatureExt(const tN2kMsg &N2kMsg) {
   tN2kTempSource TempSource;
   double ActualTemperature;
 
-  if (ParseN2kTemperatureExt(N2kMsg,SID,TempInstance,TempSource,ActualTemperature,SetTemperature) ) {
+  if (ParseN2kTemperatureExt(N2kMsg, SID, TempInstance, TempSource, ActualTemperature, SetTemperature))
+  {
 
     capstone_protobuf::Temperature temperature_data;
     temperature_data.set_temperature(ActualTemperature);
     generateAndSendNMEAPacket(timestamp, temperature_data, "temperature", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void COGSOGRapid(const tN2kMsg &N2kMsg) {
+void COGSOGRapid(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -155,19 +159,23 @@ void COGSOGRapid(const tN2kMsg &N2kMsg) {
   double COG;
   double SOG;
 
-  if (ParseN2kCOGSOGRapid(N2kMsg,SID, ref, COG, SOG) ) {
+  if (ParseN2kCOGSOGRapid(N2kMsg, SID, ref, COG, SOG))
+  {
 
     capstone_protobuf::COGSOG cogsog_data;
     cogsog_data.set_cog(COG);
     cogsog_data.set_sog(SOG);
     generateAndSendNMEAPacket(timestamp, cogsog_data, "cog sog", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void SysTime(const tN2kMsg &N2kMsg) {
+void SysTime(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -179,19 +187,23 @@ void SysTime(const tN2kMsg &N2kMsg) {
   double SOG;
   tN2kTimeSource TimeSource;
 
-  if (ParseN2kSystemTime(N2kMsg,SID,SystemDate, SystemTime, TimeSource) ) {
+  if (ParseN2kSystemTime(N2kMsg, SID, SystemDate, SystemTime, TimeSource))
+  {
 
     capstone_protobuf::SysTime systime_data;
     systime_data.set_date(SystemDate);
     systime_data.set_time(SystemTime);
     generateAndSendNMEAPacket(timestamp, systime_data, "system time", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void GNSSPosition(const tN2kMsg &N2kMsg) {
+void GNSSPosition(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -214,12 +226,12 @@ void GNSSPosition(const tN2kMsg &N2kMsg) {
   double AgeOfCorrection;
 
   if (ParseN2kGNSS(N2kMsg, SID, DaysSince1970, SecondsSinceMidnight,
-                     Latitude, Longitude, Altitude,
-                     GNSStype, GNSSmethod,
-                     nSatellites, HDOP, PDOP, GeoidalSeparation,
-                     nReferenceStations, ReferenceStationType, ReferenceSationID,
-                     AgeOfCorrection
-                     ) ) {
+                   Latitude, Longitude, Altitude,
+                   GNSStype, GNSSmethod,
+                   nSatellites, HDOP, PDOP, GeoidalSeparation,
+                   nReferenceStations, ReferenceStationType, ReferenceSationID,
+                   AgeOfCorrection))
+  {
 
     capstone_protobuf::GNSS gnss_data;
     gnss_data.set_date(DaysSince1970);
@@ -233,13 +245,16 @@ void GNSSPosition(const tN2kMsg &N2kMsg) {
     gnss_data.set_geoidal_separation(GeoidalSeparation);
     gnss_data.set_num_reference_stations(nReferenceStations);
     generateAndSendNMEAPacket(timestamp, gnss_data, "gnss", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void SatsInView(const tN2kMsg &N2kMsg) {
+void SatsInView(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -247,18 +262,22 @@ void SatsInView(const tN2kMsg &N2kMsg) {
   uint8_t SVIndex;
   tSatelliteInfo SatelliteInfo; // Not currently used
 
-  if (ParseN2kPGNSatellitesInView(N2kMsg,SVIndex,SatelliteInfo) ) {
+  if (ParseN2kPGNSatellitesInView(N2kMsg, SVIndex, SatelliteInfo))
+  {
 
     capstone_protobuf::SatsInView sats_data;
     sats_data.set_sats_in_view(SVIndex);
     generateAndSendNMEAPacket(timestamp, sats_data, "satellites in view", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void WindData(const tN2kMsg &N2kMsg) {
+void WindData(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -269,19 +288,23 @@ void WindData(const tN2kMsg &N2kMsg) {
   double WindAngle;
   tN2kWindReference WindReference;
 
-  if (ParseN2kWindSpeed(N2kMsg,SID,WindSpeed, WindAngle,WindReference ) ) {
+  if (ParseN2kWindSpeed(N2kMsg, SID, WindSpeed, WindAngle, WindReference))
+  {
 
     capstone_protobuf::Wind wind_data;
     wind_data.set_speed(WindSpeed);
     wind_data.set_angle(WindAngle);
     generateAndSendNMEAPacket(timestamp, wind_data, "wind data", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void PositionRapid(const tN2kMsg &N2kMsg) {
+void PositionRapid(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -289,19 +312,23 @@ void PositionRapid(const tN2kMsg &N2kMsg) {
   double Longitude;
   double Latitude;
 
-  if (ParseN2kPositionRapid(N2kMsg,Longitude, Latitude) ) {
+  if (ParseN2kPositionRapid(N2kMsg, Longitude, Latitude))
+  {
 
     capstone_protobuf::Position position_data;
     position_data.set_latitude(Latitude);
     position_data.set_longitude(Longitude);
     generateAndSendNMEAPacket(timestamp, position_data, "position rapid", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void MagneticVariation(const tN2kMsg &N2kMsg) {
+void MagneticVariation(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -311,19 +338,23 @@ void MagneticVariation(const tN2kMsg &N2kMsg) {
   uint16_t DaysSince1970;
   double Variation;
 
-  if (ParseN2kMagneticVariation(N2kMsg,SID, Source, DaysSince1970, Variation) ) {
+  if (ParseN2kMagneticVariation(N2kMsg, SID, Source, DaysSince1970, Variation))
+  {
 
     capstone_protobuf::MagneticVariation variation_data;
     variation_data.set_age_of_service(DaysSince1970);
     variation_data.set_variation(Variation);
     generateAndSendNMEAPacket(timestamp, variation_data, "magnetic variation", N2kMsg);
-
-  } else {
-    serStream.print("Failed to parse PGN: ");  serStream.println(N2kMsg.PGN);
+  }
+  else
+  {
+    serStream.print("Failed to parse PGN: ");
+    serStream.println(N2kMsg.PGN);
   }
 }
 
-void VesselHeading(const tN2kMsg &N2kMsg) {
+void VesselHeading(const tN2kMsg &N2kMsg)
+{
 
   google::protobuf::Timestamp *timestamp = new google::protobuf::Timestamp();
   timestamp->set_seconds(time(nullptr));
@@ -402,7 +433,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 
   std::string encrypted_payload_str = encrypted_payload.encrypted_string;
   std::string nonce_str = encrypted_payload.nonce;
-  
+
   capstone_protobuf::EncryptedPacket encrypted_packet;
 
   capstone_protobuf::MetaData *metadata_copy = new capstone_protobuf::MetaData();
@@ -418,7 +449,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
 }
 
 const bool UDP_DEBUG = true;
-UDPPub pub(PUBLISHER_PORT, GracesHouse::Ventana1_ETH1, false, true);
+UDPPub pub(PUBLISHER_PORT, GracesHouse::MattLinux, false, true);
 
 void udpSendString(std::string packet_str)
 {
@@ -468,7 +499,7 @@ void udpSend(capstone_protobuf::EncryptedPacket &encrypted_packet)
   return;
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -489,6 +520,22 @@ int main(void)
 
   cout << endl
        << "CAN started, going to watch it now" << endl;
+
+  // defaults for command line arguments
+  const char *publish_ip = GracesHouse::Ventana1_ETH1;
+  int publish_port = PUBLISHER_PORT;
+
+  // Parse command-line arguments
+  if (argc > 1)
+  {
+    publish_ip = argv[1];
+    std::cout << "Receive IP: " << publish_ip << std::endl;
+  }
+  if (argc > 2)
+  {
+    publish_port = std::stoi(argv[2]);
+    std::cout << "Receive Port: " << publish_port << std::endl;
+  }
 
   while (1)
   {

@@ -74,6 +74,13 @@ To run the `Application` class that can read and deserialize packets.
 ./application
 ```
 
+The relay can be run by typing the ip and port in the command line
+
+```bash
+./relay_main 127.0.0.1 8080
+```
+
 ## SSH key setup
 
 Follow the steps from [GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux).
+

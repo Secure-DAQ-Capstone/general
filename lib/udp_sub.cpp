@@ -1,8 +1,8 @@
 #include "udp_sub.h"
 #include "constants.h"
 
-UDPSub::UDPSub(int port, const char* address, bool debug)
-: debug(debug)
+UDPSub::UDPSub(int port, const char *address, bool debug)
+    : debug(debug)
 {
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0)
@@ -24,14 +24,14 @@ UDPSub::UDPSub(int port, const char* address, bool debug)
     if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
         close(socket_fd);
-        throw std::runtime_error(formatErrorMessage("Error binding Socket"));
+        std::cout << "Error binding Socket to address and port " << inet_ntoa(server_addr.sin_addr) << " and port: " << ntohs(server_addr.sin_port) << std::endl;
+        throw std::runtime_error(formatErrorMessage("Error binding Socket to address and port "));
     }
     else
     {
         std::cout << "Socket bound to address: " << inet_ntoa(server_addr.sin_addr) << " and port: " << ntohs(server_addr.sin_port) << std::endl;
     }
 }
-
 
 std::string UDPSub::read()
 {
@@ -47,7 +47,7 @@ std::string UDPSub::read()
 
     /**
      * Returns the number of bytes received.
-    */
+     */
     ssize_t recv_bytes = recvfrom(socket_fd, buffer, sizeof(buffer) - 1, 0,
                                   (sockaddr *)&client_addr, &client_len);
     if (recv_bytes < 0)
@@ -60,14 +60,14 @@ std::string UDPSub::read()
      */
     std::string received_message(buffer, recv_bytes);
 
-    if (this->debug){
+    if (this->debug)
+    {
         std::cout << "Received message" << std::endl;
         std::cout << "Message: " << received_message << std::endl;
     }
 
     return received_message;
 }
-
 
 UDPSub::~UDPSub()
 {

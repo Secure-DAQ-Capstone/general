@@ -12,7 +12,7 @@ class UDPPub
 public:
     UDPPub() = delete; // prevent usage of default constructor
 
-    UDPPub(int port, const char* address, bool broadcast = false, bool debug = false);
+    UDPPub(int port, const char *address, bool broadcast = false, bool debug = false);
 
     void write(std::string message, bool debug = false);
 
