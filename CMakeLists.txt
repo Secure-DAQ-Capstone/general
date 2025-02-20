@@ -7,11 +7,6 @@ find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 message(STATUS "Protobuf Include Dir: ${Protobuf_INCLUDE_DIRS}")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/lib")
-find_package(Sodium REQUIRED)
-include_directories(${sodium_INCLUDE_DIR})
-message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
-
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
 
@@ -21,6 +16,24 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_PATH})
 # Include the generated protobuf headers
 include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will be in the build directory
 include_directories(include)
+
+set(CMAKE_PREFIX_PATH "/home/gracepearcey/.programs/libsodium-stable/zig-out" ${CMAKE_PREFIX_PATH})
+set(CMAKE_LIBRARY_PATH "/home/gracepearcey/.programs/libsodium-stable/zig-out/lib" ${CMAKE_LIBRARY_PATH})
+set(CMAKE_INCLUDE_PATH "/home/gracepearcey/.programs/libsodium-stable/zig-out/include" ${CMAKE_INCLUDE_PATH})
+set(ENV{PKG_CONFIG_PATH} "/home/gracepearcey/.programs/libsodium-stable/zig-out/lib/pkgconfig")
+
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/lib")
+find_package(Sodium REQUIRED)
+include_directories("/home/gracepearcey/.programs/libsodium-stable/zig-out/include")
+
+message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
+find_path(SODIUM_INCLUDE_DIR sodium.h
+    HINTS /home/gracepearcey/.programs/libsodium-stable/zig-out/include
+)
+include_directories(${SODIUM_INCLUDE_DIR})
+message(STATUS "Sodium Include: ${sodium_INCLUDE_DIR}")
+
 
 # Add subdirectories for the libraries
 add_subdirectory(submodules/NMEA2000)
@@ -60,9 +73,26 @@ add_library(security STATIC
 
 target_link_libraries(security
   PRIVATE ${sodium_LIBRARIES}
+  Sodium
 )
 
 ############# NMEA READER
+
+
+# Set the WASI SDK path (update this if your path is different)
+set(WASI_SDK_PATH $ENV{WASI_SDK_PATH})
+
+# Set the C++ compiler to WASI Clang++
+set(CMAKE_CXX_COMPILER "${WASI_SDK_PATH}/bin/clang++")
+
+# Set necessary flags
+set(CMAKE_CXX_FLAGS "--sysroot=${WASI_SDK_PATH}/share/wasi-sysroot/")
+
+# Include Wasmtime headers
+include_directories(/home/gracepearcey/.programs/wasmtime/target/release/build/wasmtime-c-api-impl-8f8a571fe5e24873/out/include)
+
+# # Define the executable
+# add_executable(wasi.wasm wasi.cpp)
 
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
