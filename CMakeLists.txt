@@ -122,9 +122,11 @@ if (USE_MONGO)
     PRIVATE ${Protobuf_LIBRARIES}
     libudp_sub
     db_handler
-    proto_json
-    PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
+    application
     security
+    proto_json
+    constants
+    PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
   )
 
   target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
