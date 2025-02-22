@@ -14,7 +14,10 @@ set(PROTO_FILE_PATH protobuf/packet.proto)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_PATH})
 
 # Include the generated protobuf headers
-include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will be in the build directory
+include_directories(${CMAKE_CURRENT_BINARY_DIR}) 
+include_directories("/home/gracepearcey/repos/capstone/general/protobuf/")  # The generated headers will be in the build directory
+include_directories("/home/gracepearcey/repos/capstone/protobuf/build_wasm/_deps/absl-src/") 
+include_directories("/home/gracepearcey/repos/capstone/protobuf/src/") 
 include_directories(include)
 
 set(CMAKE_PREFIX_PATH "/home/gracepearcey/.programs/libsodium-stable/zig-out" ${CMAKE_PREFIX_PATH})
@@ -120,99 +123,99 @@ target_link_libraries(udp_test
 
 ############# MongoApp File
 
-if (USE_MONGO)
+# if (USE_MONGO)
 
-  add_library(db_handler
-  lib/mongodb_handler.cpp
-  )
+#   add_library(db_handler
+#   lib/mongodb_handler.cpp
+#   )
 
-  add_library(proto_json
-  lib/proto_json_converter.cpp
-  )
+#   add_library(proto_json
+#   lib/proto_json_converter.cpp
+#   )
 
-  #Include MongoDB headers and libraries for db_handler
-  target_include_directories(db_handler PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-  target_link_directories(db_handler PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
-  target_link_libraries(db_handler PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES})
-  target_compile_options(db_handler PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
+#   #Include MongoDB headers and libraries for db_handler
+#   target_include_directories(db_handler PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+#   target_link_directories(db_handler PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
+#   target_link_libraries(db_handler PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES})
+#   target_compile_options(db_handler PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
 
-  #Find and link MongoDB libraries
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
-  pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
+#   #Find and link MongoDB libraries
+#   find_package(PkgConfig REQUIRED)
+#   pkg_check_modules(MONGOCXX REQUIRED libmongocxx)
+#   pkg_check_modules(BSONCXX REQUIRED libbsoncxx)
 
-  #Add executable for testing pub/sub functionality
-  add_executable(mongo_app src/mongo_app.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-
-
-  #Include MongoDB headers and libraries
-  target_include_directories(mongo_app PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
-  target_link_directories(mongo_app PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
-  target_link_libraries(mongo_app
-    PRIVATE ${Protobuf_LIBRARIES}
-    libudp_sub
-    db_handler
-    application
-    security
-    proto_json
-    constants
-    PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
-  )
-
-  target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
-  set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
-
-endif()
+#   #Add executable for testing pub/sub functionality
+#   add_executable(mongo_app src/mongo_app.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 
-##### Broadcast
+#   #Include MongoDB headers and libraries
+#   target_include_directories(mongo_app PRIVATE ${MONGOCXX_INCLUDE_DIRS} ${BSONCXX_INCLUDE_DIRS})
+#   target_link_directories(mongo_app PRIVATE ${MONGOCXX_LIBRARY_DIRS} ${BSONCXX_LIBRARY_DIRS})
+#   target_link_libraries(mongo_app
+#     PRIVATE ${Protobuf_LIBRARIES}
+#     libudp_sub
+#     db_handler
+#     application
+#     security
+#     proto_json
+#     constants
+#     PRIVATE ${MONGOCXX_LIBRARIES} ${BSONCXX_LIBRARIES}
+#   )
 
-if (USE_BROADCAST)
+#   target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
+#   set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 
-  add_executable(receiver src/broadcast_receiver.cpp)
-
-  add_executable(sender src/broadcast_sender.cpp)
-
-endif()
-
-
-############# main Application File
-
-#Add executable
-add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-
-add_library(application
-  lib/application.cpp
-  )
-
-add_library(constants
-  lib/constants.cpp
-  )
-
-target_link_libraries(app_main
-  PRIVATE ${Protobuf_LIBRARIES}
-  libudp_sub
-  application
-  security
-  constants
-)
+# endif()
 
 
-############# Relay File
+# ##### Broadcast
 
-#Add executable
-add_executable(relay_main src/relay_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+# if (USE_BROADCAST)
+
+#   add_executable(receiver src/broadcast_receiver.cpp)
+
+#   add_executable(sender src/broadcast_sender.cpp)
+
+# endif()
 
 
-add_library(relay
-  lib/relay.cpp
-  )
+# ############# main Application File
 
-target_link_libraries(relay_main
-  PRIVATE ${Protobuf_LIBRARIES}
-  libudp_sub
-  relay
-  application
-  security
-  constants
-)
+# #Add executable
+# add_executable(app_main src/app_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+# add_library(application
+#   lib/application.cpp
+#   )
+
+# add_library(constants
+#   lib/constants.cpp
+#   )
+
+# target_link_libraries(app_main
+#   PRIVATE ${Protobuf_LIBRARIES}
+#   libudp_sub
+#   application
+#   security
+#   constants
+# )
+
+
+# ############# Relay File
+
+# #Add executable
+# add_executable(relay_main src/relay_main.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+
+
+# add_library(relay
+#   lib/relay.cpp
+#   )
+
+# target_link_libraries(relay_main
+#   PRIVATE ${Protobuf_LIBRARIES}
+#   libudp_sub
+#   relay
+#   application
+#   security
+#   constants
+# )
