@@ -1,4 +1,18 @@
 
+
+# Bare submodule creation
+
+```bash
+# NMEA2000
+git clone --mirror git@github.com:ttlappalainen/NMEA2000.git ~/git-registry/NMEA2000.git
+
+# Grace's socket branch
+git clone --mirror git@github.com:gpearcey/NMEA2000_socketCAN.git
+```
+
+
+# Chat GPT scripts
+
 Here's a **Bash script** that configures Git submodules to use **Tony's registry** when available, and **GitHub otherwise**. It also includes options to **set, check, or remove** the override.
 
 ### 📌 **How to Use the Script**
