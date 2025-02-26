@@ -8,17 +8,16 @@ GITHUB_PREFIX="git@github.com:"
 
 # Submodules to be mirrored
 SUBMODULES=(
-    "NMEA2000_socketCAN git@github.com:gpearcey/NMEA2000_socketCAN.git"
-    "NMEA2000 git@github.com:ttlappalainen/NMEA2000.git"
+    "gpearcey NMEA2000_socketCAN git@github.com:gpearcey/NMEA2000_socketCAN.git"
+    "ttlappalainen NMEA2000 git@github.com:ttlappalainen/NMEA2000.git"
 )
 
 # Function to create bare registries for submodules
 create_bare_repos() {
     echo "Creating bare repositories for submodules..."
     for entry in "${SUBMODULES[@]}"; do
-        IFS=' ' read -r name url <<< "$entry"
-        USERNAME=$(echo "$url" | awk -F'[@:/]' '{print $4}')
-        REPO_PATH="$TONY_GIT_REGISTRY$USERNAME/$name.git"
+        IFS=' ' read -r username name url <<< "$entry"
+        REPO_PATH="$TONY_GIT_REGISTRY$username/$name.git"
         
         if [ -d "$REPO_PATH" ]; then
             if [ -z "$(ls -A "$REPO_PATH")" ]; then
