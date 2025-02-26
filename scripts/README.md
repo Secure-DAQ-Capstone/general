@@ -16,6 +16,7 @@ git clone --mirror git@github.com:gpearcey/NMEA2000_socketCAN.git
 Here's a **Bash script** that configures Git submodules to use **Tony's registry** when available, and **GitHub otherwise**. It also includes options to **set, check, or remove** the override.
 
 ### 📌 **How to Use the Script**
+
 1. **Save the script** as `git-submodule-switcher.sh` and make it executable:
    ```bash
    chmod +x git-submodule-switcher.sh

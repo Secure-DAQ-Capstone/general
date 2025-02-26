@@ -17,7 +17,8 @@ create_bare_repos() {
     echo "Creating bare repositories for submodules..."
     for entry in "${SUBMODULES[@]}"; do
         IFS=' ' read -r name url <<< "$entry"
-        REPO_PATH="$TONY_GIT_REGISTRY$name.git"
+        USERNAME=$(echo "$url" | awk -F'[@:/]' '{print $4}')
+        REPO_PATH="$TONY_GIT_REGISTRY$USERNAME/$name.git"
         
         if [ -d "$REPO_PATH" ]; then
             if [ -z "$(ls -A "$REPO_PATH")" ]; then
