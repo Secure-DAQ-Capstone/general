@@ -41,6 +41,9 @@ set(PROTO_FILE_PATH protobuf/packet.proto)
 # Generate the .cc and .h files from the .proto file
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILE_PATH})
 
+# Create a dependency for protobuf
+add_library(protobuf_generated ${PROTO_SRCS} ${PROTO_HDRS})
+
 # Include the generated protobuf headers
 include_directories(${CMAKE_CURRENT_BINARY_DIR})  # The generated headers will be in the build directory
 include_directories(include)
@@ -107,6 +110,8 @@ target_link_libraries(nmea_reader
 
 target_compile_options(nmea_reader PRIVATE -g -O0)
 
+add_dependencies(nmea_reader protobuf_generated)
+
 
 ############## udp_test file
 
@@ -163,6 +168,9 @@ if (USE_MONGO)
   target_compile_options(mongo_app PRIVATE ${MONGOCXX_CFLAGS_OTHER} ${BSONCXX_CFLAGS_OTHER})
   set(CMAKE_INSTALL_RPATH "${MONGOCXX_LIBRARY_DIRS};${BSONCXX_LIBRARY_DIRS}")
 
+  add_dependencies(mongo_app protobuf_generated)
+
+
 endif()
 
 
@@ -194,6 +202,9 @@ target_link_libraries(app_main
   constants
 )
 
+add_dependencies(app_main protobuf_generated)
+
+
 
 ############# Relay File
 
@@ -216,3 +227,5 @@ target_link_libraries(relay_main
   relay
   base
 )
+
+add_dependencies(relay_main protobuf_generated)
