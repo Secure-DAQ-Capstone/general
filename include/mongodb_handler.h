@@ -9,10 +9,11 @@
 #include <bsoncxx/builder/stream/document.hpp>
 #include <iostream>
 
-class MongoDBHandler {
+class MongoDBHandler
+{
 public:
-    MongoDBHandler(const std::string& uri, const std::string& db_name, const std::string& collection_name);
-    void storeJson(const std::string& json_data);
+    MongoDBHandler(const std::string &uri, const std::string &db_name, const std::string &collection_name);
+    void storeJson(const std::string &json_data);
 
 private:
     mongocxx::client client;
