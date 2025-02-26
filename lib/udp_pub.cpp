@@ -1,7 +1,7 @@
 #include "udp_pub.h"
 #include "constants.h"
 
-UDPPub::UDPPub(int port, const char* address, bool broadcast, bool debug)
+UDPPub::UDPPub(int port, const char *address, bool debug, bool broadcast)
 {
     this->broadcastEnable = broadcast;
     this->debug = debug;
@@ -41,25 +41,25 @@ UDPPub::UDPPub(int port, const char* address, bool broadcast, bool debug)
     dest_addr.sin_port = htons(port);
     dest_addr.sin_addr.s_addr = sendto_address;
 
-    if (debug){
+    if (debug)
+    {
         std::cout << "Sending messages to address: " << inet_ntoa(dest_addr.sin_addr) << " and port: " << ntohs(dest_addr.sin_port) << std::endl;
     }
-    
 }
 
 void UDPPub::write(std::string message, bool debug)
 {
     /**
-     * The message is converted from a std::string to a c string. 
+     * The message is converted from a std::string to a c string.
      * the c_str() function returns a pointer to a null terminated char array.
-    */
+     */
     // Send the message to the server
     ssize_t sent_bytes = sendto(socket_fd, message.c_str(), message.size(), 0,
                                 (sockaddr *)&dest_addr, sizeof(dest_addr));
     if (sent_bytes < 0)
     {
         throw std::runtime_error(formatErrorMessage("Error sending message"));
-    } 
+    }
     else if (debug)
     {
         std::cout << "Sent " << sent_bytes << std::endl;

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     std::string role = argv[1];
     if (role == "sub")
     {
-        runSubscriber( port, sub_local_address);
+        runSubscriber(port, sub_local_address);
     }
     else if (role == "pub")
     {

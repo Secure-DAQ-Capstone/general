@@ -12,6 +12,29 @@ find_package(Sodium REQUIRED)
 include_directories(${sodium_INCLUDE_DIR})
 message(STATUS "Sodium Libraries: ${sodium_LIBRARIES}")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+
+
+####### DEBUG EXAMPLES  ------------------------------
+
+# Compiler flags for Debug build
+# set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+
+# Apply debug flags ONLY to debug_this.cpp
+# set_source_files_properties(debug_this.cpp PROPERTIES COMPILE_FLAGS "-g -O0")
+
+# Executable WITH debug symbols
+# add_executable(MyDebugApp debug_main.cpp)
+
+# Apply debug flags ONLY to MyDebugApp
+# target_compile_options(MyDebugApp PRIVATE -g -O0)
+
+
+############# END Debug Examples ----------------------------------
+
 # Specify the .proto file
 set(PROTO_FILE_PATH protobuf/packet.proto)
 
@@ -67,6 +90,10 @@ target_link_libraries(security
 # Define the main executable
 add_executable(nmea_reader src/nmea_reader.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
+add_library(constants
+  lib/constants.cpp
+  )
+
 # Link libraries
 target_link_libraries(nmea_reader
     PRIVATE nmea2000
@@ -75,7 +102,11 @@ target_link_libraries(nmea_reader
     libudp_pub
     libudp_sub
     security
+    constants
 )
+
+target_compile_options(nmea_reader PRIVATE -g -O0)
+
 
 ############## udp_test file
 
@@ -155,10 +186,6 @@ add_library(application
   lib/application.cpp
   )
 
-add_library(constants
-  lib/constants.cpp
-  )
-
 target_link_libraries(app_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
@@ -178,11 +205,14 @@ add_library(relay
   lib/relay.cpp
   )
 
+add_library(base
+  lib/base_subscriber.cpp
+  )
+
 target_link_libraries(relay_main
   PRIVATE ${Protobuf_LIBRARIES}
   libudp_sub
+  libudp_pub
   relay
-  application
-  security
-  constants
+  base
 )
