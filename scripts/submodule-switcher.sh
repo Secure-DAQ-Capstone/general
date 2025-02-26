@@ -5,15 +5,12 @@ TONY_USER="mjgrouchy"
 TONY_HOST="10.0.0.1"
 TONY_GIT_REGISTRY="~/git-registry/"
 GITHUB_PREFIX="git@github.com:"
-NMEA_SOCKET_PREFIX="gpearcey"
-NMEA_PREFIX="ttlappalainen"
 
 
 # Function to set the override
 set_override() {
     echo "Configuring Git to use Tony's registry instead of GitHub..."
-    git config --global url."$TONY_USER@$TONY_HOST:$TONY_GIT_REGISTRY".insteadOf "$GITHUB_PREFIX$NMEA_SOCKET_PREFIX"
-    git config --global url."$TONY_USER@$TONY_HOST:$TONY_GIT_REGISTRY".insteadOf "$GITHUB_PREFIX$NMEA_PREFIX" 
+    git config --global url."$TONY_USER@$TONY_HOST:$TONY_GIT_REGISTRY".insteadOf "$GITHUB_PREFIX"
     echo "Override set! GitHub submodules will now be pulled from Tony when available."
 }
 
