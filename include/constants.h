@@ -23,6 +23,17 @@ struct MattsHouse
     static constexpr int BROADCAST_PORT = 12345;
 };
 
+struct VisorLab
+{
+	static constexpr const char *Ventana1 = "10.0.0.101";
+	static constexpr const char *Ventana2 = "10.0.0.102";
+	static constexpr const char *Ventana3 = "10.0.0.103";
+	static constexpr const char *Ventana4 = "10.0.0.104";
+	static constexpr const char *Tony = "10.0.0.1";	
+	static constexpr const char *FaresLaptop = "10.0.0.107";
+};
+
+
 static constexpr const char *LOOPBACK_IP = "127.0.0.1";
 
 #define UDP_BUFFER_SIZE 500
