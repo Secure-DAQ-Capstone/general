@@ -28,7 +28,7 @@ private:
     std::string formatErrorMessage(const std::string &message) const
     {
         return "UDPPub: " + message;
-    }
+    };
 };
 
 #endif // UDP_PUB

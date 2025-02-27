@@ -34,7 +34,7 @@ std::vector<int> PGNS;
 
 security_base signer_security_agent(std::string(homeDir) + "/.capstone_keys/private_key_boards.txt", 1);
 
-extern UDPPub pub;
+// extern UDPPub pubit;
 
 // TODO - Temporary Implementations **********************************************************************
 // Call the encryption function from the security class
