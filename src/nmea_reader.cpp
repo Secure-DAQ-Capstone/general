@@ -448,8 +448,13 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
   return encrypted_packet;
 }
 
-const bool UDP_DEBUG = true;
-UDPPub pub(PUBLISHER_PORT, VisorLab::Ventana1);
+/**
+ * Define the UDP Publisher with default values and change them if needed in main
+ */
+// defaults for command line arguments
+const char *publish_ip = VisorLab::FaresLaptop;
+int publish_port = PUBLISHER_PORT;
+UDPPub pub(publish_port, publish_ip);
 
 void udpSendString(std::string packet_str)
 {
@@ -522,19 +527,29 @@ int main(int argc, char *argv[])
        << "CAN started, going to watch it now" << endl;
 
   // defaults for command line arguments
-  const char *publish_ip = GracesHouse::Ventana1_ETH1;
+  const char *publish_ip = VisorLab::Ventana1;
   int publish_port = PUBLISHER_PORT;
 
   // Parse command-line arguments
+  if (std::strcmp(argv[1], "-h") == 0)
+  {
+    std::cout << "Usage: " << argv[0] << " [publish_ip] [publish_port]" << std::endl;
+    std::cout << "  publish_ip: IP address to publish to (default: " << publish_ip << ")" << std::endl;
+    std::cout << "  publish_port: Port to publish to (default: " << publish_port << ")" << std::endl;
+    return 0;
+  }
+
   if (argc > 1)
   {
     publish_ip = argv[1];
     std::cout << "Receive IP: " << publish_ip << std::endl;
-  }
-  if (argc > 2)
-  {
-    publish_port = std::stoi(argv[2]);
-    std::cout << "Receive Port: " << publish_port << std::endl;
+    if (argc > 2)
+    {
+      publish_port = std::stoi(argv[2]);
+      std::cout << "Receive Port: " << publish_port << std::endl;
+    }
+    // Reinitialize the publisher with the new IP and port
+    //pub = UDPPub(publish_port, publish_ip);
   }
 
   while (1)
