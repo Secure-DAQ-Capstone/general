@@ -102,5 +102,19 @@ bool security_base::verifySignature(const unsigned char sig[crypto_sign_BYTES], 
     }
 }
 
+std::string security_base::getKey()
+{
+    string key_str;
+
+    //Display the key as a hexadecimal string
+    std::ostringstream oss;
+    for (size_t i = 0; i < crypto_sign_PUBLICKEYBYTES; i++) 
+    {
+        oss << hex << setw(2) << setfill('0') << (int)this->key[i];
+    }
+    key_str = oss.str();
+    
+    return key_str;
+}
 
 

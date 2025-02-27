@@ -28,6 +28,8 @@ public:
 
     //Verifies the digital signature
     bool verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len);
+
+    std::string getKey();
 };
 
 #endif // SECURITY_H
