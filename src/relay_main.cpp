@@ -11,8 +11,13 @@ int main(int argc, char *argv[])
     bool debug_sub = true;
 
     // defaults for command line arguments
-    const char *receive_ip = GracesHouse::MattLinux;
+    const char *receive_ip = VisorLab::Ventana1;
     int receive_port = PUBLISHER_PORT;
+
+    // Publisher
+    const char *publish_ip = VisorLab::Tony;
+    int publish_port = PUBLISHER_PORT;
+
 
     // Parse command-line arguments
     if (argc > 1)
@@ -22,15 +27,12 @@ int main(int argc, char *argv[])
     }
     if (argc > 2)
     {
-        receive_port = std::stoi(argv[2]);
-        std::cout << "Receive Port: " << receive_port << std::endl;
+        publish_ip = argv[2];
+        std::cout << "Publish IP: " << publish_ip << std::endl;
     }
 
-    // Publisher
-    const char *publish_ip = GracesHouse::Ventana1_ETH1;
-    int publish_port = PUBLISHER_PORT;
 
-    Config config(receive_port, receive_ip, GracesHouse::Ventana1_ETH1, PUBLISHER_PORT);
+    Config config(receive_port, receive_ip, publish_ip, publish_port);
 
     Relay relay(config, debug_application, debug_sub);
 
