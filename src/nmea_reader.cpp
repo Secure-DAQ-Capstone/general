@@ -527,7 +527,7 @@ int main(int argc, char *argv[])
        << "CAN started, going to watch it now" << endl;
 
   // defaults for command line arguments
-  const char *publish_ip = VisorLab::Ventana1;
+  const char *publish_ip = VisorLab::MattLaptop;
   int publish_port = PUBLISHER_PORT;
 
   // Parse command-line arguments
