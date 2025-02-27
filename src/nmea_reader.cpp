@@ -549,7 +549,7 @@ int main(int argc, char *argv[])
       std::cout << "Receive Port: " << publish_port << std::endl;
     }
     // Reinitialize the publisher with the new IP and port
-    pub = UDPPub(publish_port, publish_ip);
+    // pub = UDPPub(publish_port, publish_ip);
   }
 
   while (1)
