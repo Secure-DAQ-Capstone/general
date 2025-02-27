@@ -527,8 +527,8 @@ int main(int argc, char *argv[])
        << "CAN started, going to watch it now" << endl;
 
   // defaults for command line arguments
-  const char *publish_ip = VisorLab::MattLaptop;
-  int publish_port = PUBLISHER_PORT;
+  // const char *publish_ip = VisorLab::MattLaptop;
+  // int publish_port = PUBLISHER_PORT;
 
   // Parse command-line arguments
   if (std::strcmp(argv[1], "-h") == 0)
@@ -539,18 +539,18 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  if (argc > 1)
-  {
-    publish_ip = argv[1];
-    std::cout << "Receive IP: " << publish_ip << std::endl;
-    if (argc > 2)
-    {
-      publish_port = std::stoi(argv[2]);
-      std::cout << "Receive Port: " << publish_port << std::endl;
-    }
-    // Reinitialize the publisher with the new IP and port
-    // pub = UDPPub(publish_port, publish_ip);
-  }
+  // if (argc > 1)
+  // {
+  //   publish_ip = argv[1];
+  //   std::cout << "Receive IP: " << publish_ip << std::endl;
+  //   if (argc > 2)
+  //   {
+  //     publish_port = std::stoi(argv[2]);
+  //     std::cout << "Receive Port: " << publish_port << std::endl;
+  //   }
+  //   // Reinitialize the publisher with the new IP and port
+  //   // pub = UDPPub(publish_port, publish_ip);
+  // }
 
   while (1)
   {
