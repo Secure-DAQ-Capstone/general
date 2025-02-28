@@ -32,7 +32,7 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
-security_base signer_security_agent("../private_key_boards.txt", 1);
+security_base signer_security_agent(std::string(homeDir) + "/.capstone_keys/private_key_boards.txt", 1);
 
 // TODO - Temporary Implementations **********************************************************************
 // Call the encryption function from the security class

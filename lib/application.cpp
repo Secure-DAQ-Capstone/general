@@ -40,12 +40,6 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         payload->ParseFromString(payload_str);
         packet_output.set_allocated_payload(payload);
 
-        // Debug logs
-        if (this->debug)
-        {
-            std::cout << packet_output.DebugString() << std::endl;
-        }
-
         std::string signature_str = metadata_copy->digital_signature();
 
         std::string str_payload;
@@ -68,9 +62,21 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
             file << packet_output.DebugString() << std::endl;
 
             file.close();
+
+            packet_output.mutable_metadata()->set_digital_signature("Digital Signature Verification Failed: " + signature_str);
+        }
+        else
+        {
+            packet_output.mutable_metadata()->set_digital_signature("Digital Signature Verified: "+ signature_str + " Public Key used: " + signature_verifier_security_agent.getKey()); 
         }
 
-        return verified_signature;
+        // Debug logs
+        if (this->debug)
+        {
+            std::cout << packet_output.DebugString() << std::endl;
+        }
+
+        return true;
     }
     catch (const std::exception &e)
     {

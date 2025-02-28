@@ -29,10 +29,21 @@ void Relay::relay_packet(const std::string &packet_str)
     }
 }
 
+/**
+ * Add the current board id to the relay chain
+ */
 void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
 {
-    // Edit the packet metadata
-    std::cout << "Edit the packet" << std::endl;
+    // Create a new RelayChainEntry
+    capstone_protobuf::MetaData::RelayChainEntry *entry = packet.mutable_metadata()->add_relay_chain();
+    entry->set_board_id(2);                                    // Set the board ID (example value)
+    entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
+
+    // Debug log
+    if (this->debug)
+    {
+        std::cout << "Added RelayChainEntry: board_id=" << entry->board_id() << ", timestamp=" << entry->timestamp() << std::endl;
+    }
 }
 
 void Relay::update()
