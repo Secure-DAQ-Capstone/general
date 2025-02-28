@@ -25,14 +25,14 @@ struct MattsHouse
 
 struct VisorLab
 {
-	static constexpr const char *Ventana1 = "10.0.0.101";
-	static constexpr const char *Ventana2 = "10.0.0.102";
-	static constexpr const char *Ventana3 = "10.0.0.103";
-	static constexpr const char *Ventana4 = "10.0.0.104";
-	static constexpr const char *Tony = "10.0.0.1";	
-	static constexpr const char *FaresLaptop = "10.0.0.107";
+    static constexpr const char *Ventana1 = "10.0.0.101";
+    static constexpr const char *Ventana2 = "10.0.0.102";
+    static constexpr const char *Ventana3 = "10.0.0.103";
+    static constexpr const char *Ventana4 = "10.0.0.104";
+    static constexpr const char *Tony = "10.0.0.1";
+    static constexpr const char *FaresLaptop = "10.0.0.107";
+    static constexpr const char *MattLaptop = "10.0.0.108";
 };
-
 
 static constexpr const char *LOOPBACK_IP = "127.0.0.1";
 
@@ -53,7 +53,7 @@ struct Config
         : receive_port(r_port), receive_ip(r_ip), publish_ip(p_ip), publish_port(p_port) {}
 };
 
-static char* homeDir = getenv("HOME");
+static char *homeDir = getenv("HOME");
 
 #define BOARD_ID_1 1
 #define BOARD_ID_2 2
