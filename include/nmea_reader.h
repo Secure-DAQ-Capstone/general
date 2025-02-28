@@ -151,7 +151,7 @@ void generateMetaData(
   // Make and add a relay chain entry
   capstone_protobuf::MetaData::RelayChainEntry *entry = metadata->add_relay_chain();
   entry->set_board_id(board_id);
-  entry->set_timestamp(time_received);
+  entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
 }
 
 template <typename T>

@@ -36,7 +36,7 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
 {
     // Create a new RelayChainEntry
     capstone_protobuf::MetaData::RelayChainEntry *entry = packet.mutable_metadata()->add_relay_chain();
-    entry->set_board_id(2);                                    // Set the board ID (example value)
+    entry->set_board_id(8);                                    // Set the board ID (example value)
     entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
 
     // Debug log
