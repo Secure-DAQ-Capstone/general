@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     const char *publish_ip = VisorLab::Tony;
     int publish_port = PUBLISHER_PORT;
 
+    std::string board_id;
     if (argc < 2)
     {
         std::cout << "Usage: " << argv[0] << " <board_id>" << std::endl;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
 
     Config config(receive_port, receive_ip, publish_ip, publish_port);
 
-    Relay relay(config, debug_application, debug_sub);
+    Relay relay(config, debug_application, debug_sub, board_id);
 
     // run the loop
     while (true)

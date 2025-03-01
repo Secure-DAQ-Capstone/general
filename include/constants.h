@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include "security.h"
+#include <string>
 
 struct GracesHouse
 {
@@ -53,7 +54,7 @@ struct Config
 };
 
 static char *homeDir = getenv("HOME");
-static std::string board_id;
+extern std::string board_id;
 
 #define BOARD_ID_1 1
 #define BOARD_ID_2 2

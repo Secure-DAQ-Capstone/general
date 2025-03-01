@@ -85,8 +85,8 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
     }
     catch (const std::exception &e)
     {
-        std::cerr << this->formatErrorMessage(e.what()) << '\n';
-        if(e.what() == "Decryption failed" || e.what() == "Failed to open key file for type 0")
+        std::string exception_message = e.what();
+        if(exception_message.find("Decryption failed") != std::string::npos|| exception_message.find("Failed to open key file for type 0") != std::string::npos)
         {
             packet_output.set_allocated_metadata(encrypted_packet.release_metadata());
             capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
@@ -96,11 +96,12 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
             packet_output.mutable_metadata()->set_decryption_succeeded(false);
             return true;
         }
-        else if (e.what() == "Failed to open key file for type 2")
+        else if (exception_message.find("Failed to open key file for type 2") != std::string::npos)
         {
             packet_output.mutable_metadata()->set_signature_verified(false);
             return true;
         }
+        std::cerr << this->formatErrorMessage(e.what()) << '\n';
         return false;
     }
 

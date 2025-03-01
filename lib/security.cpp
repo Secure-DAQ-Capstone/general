@@ -55,6 +55,7 @@ unsigned char * security_base::assignKey(std::string stored_key_path, int type)
     {
         key[i] = stoi(key_string.substr(i*2, 2), nullptr, 16);
     }
+    return key;
 }
 
 // Encrypts a plaintext string using the provided key.

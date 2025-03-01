@@ -8,7 +8,7 @@
 class Relay : public Base
 {
 public:
-    Relay(const Config &config, bool debug, bool debug_sub);
+    Relay(const Config &config, bool debug, bool debug_sub, string board_id);
 
     void relay_packet(const std::string &packet_str);
 
