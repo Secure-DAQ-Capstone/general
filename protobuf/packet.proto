@@ -59,10 +59,10 @@ message MetaData
   // Add a repeated field for the RelayChainEntry. 
   repeated RelayChainEntry relay_chain = 5;
   bytes digital_signature = 6;
-  optional bytes public_key = 7;
+  bytes public_key = 7;
   
-  optional bool signature_verified = 8;
-  optional bool decryption_succeeded = 9; 
+  bool signature_verified = 8;
+  bool decryption_succeeded = 9; 
 }
 
 
