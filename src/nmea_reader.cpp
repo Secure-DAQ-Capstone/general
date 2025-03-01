@@ -429,7 +429,8 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
   std::string str_payload;
   packet.payload().SerializeToString(&str_payload);
 
-  encryption_data_t encrypted_payload = encryptString(str_payload);
+  int board_id = packet.metadata().board_id_msg_origin();
+  encryption_data_t encrypted_payload = encryptString(str_payload, board_id);
 
   std::string encrypted_payload_str = encrypted_payload.encrypted_string;
   std::string nonce_str = encrypted_payload.nonce;

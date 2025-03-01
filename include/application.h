@@ -24,7 +24,7 @@ public:
     // Get an encrypted packet from the UDPSub
     bool get_encrypted_proto_packet(std::string packet_str, capstone_protobuf::EncryptedPacket &packet_output);
 
-    std::string decryptString(std::string str, std::string nonce_str)
+    std::string decryptString(std::string str, std::string nonce_str, int board_id = 2)
     {
         unsigned char nonce[crypto_secretbox_NONCEBYTES];
 
@@ -34,13 +34,13 @@ public:
         // Decrypt the data
         vector<unsigned char> decrypted_array(str.begin(), str.end());
         // Should be defined globally
-        vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
+        vector<unsigned char> decrypted = security_agent.decrypt(decrypted_array, str.length(), nonce, board_id);
         string decrypted_str(decrypted.begin(), decrypted.end());
 
         return decrypted_str;
     }
 
-    bool verifyDigitalSignature(std::string data, std::string signature)
+    bool verifyDigitalSignature(std::string data, std::string signature, int board_id = 2)
     {
 
         unsigned char sig[crypto_sign_BYTES];
@@ -48,7 +48,7 @@ public:
         // Conver the signature string into an array of unsigned characters
         copy(signature.begin(), signature.end(), sig);
 
-        bool verified = signature_verifier_security_agent.verifySignature(sig, (unsigned char *)data.data(), data.length());
+        bool verified = security_agent.verifySignature(sig, (unsigned char *)data.data(), data.length(), board_id);
 
         return verified;
     }

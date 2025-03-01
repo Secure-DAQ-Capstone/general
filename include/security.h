@@ -8,28 +8,28 @@
 class security_base 
 {
 private:
-    unsigned char * key;
+    unsigned char * assignKey(std::string stored_key_path, int type);
 
 public:
     //Constructor to initialize Sodium and read the stored key
-    explicit security_base(std::string stored_key_path, int type);
+    explicit security_base();
 
     //Encrypts a plaintext string using the provided key
-    std::vector<unsigned char> encrypt(const unsigned char* plaintext, int plaintext_len, unsigned char nonce[crypto_secretbox_NONCEBYTES]);
+    std::vector<unsigned char> encrypt(const unsigned char* plaintext, int plaintext_len, unsigned char nonce[crypto_secretbox_NONCEBYTES], int board_id = 2);
 
     //Decrypts a ciphertext
-    std::vector<unsigned char> decrypt(const std::vector<unsigned char> ciphertext, int ciphertext_len, const unsigned char nonce[crypto_secretbox_NONCEBYTES]);
+    std::vector<unsigned char> decrypt(const std::vector<unsigned char> ciphertext, int ciphertext_len, const unsigned char nonce[crypto_secretbox_NONCEBYTES], int board_id = 2);
 
     //Generates and returns a random nonce of crypto_secretbox_NONCEBYTES bytes
     void generateNonce(unsigned char* nonce);
     
     //Generates a digital signature for the data
-    void generateSignature(const unsigned char* msg, int msg_len, unsigned char* sig);
+    void generateSignature(const unsigned char* msg, int msg_len, unsigned char* sig, int board_id = 2);
 
     //Verifies the digital signature
-    bool verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len);
+    bool verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len, int board_id = 2);
 
-    std::string getKey();
+    unsigned char * getKey(int board_id=2);
 };
 
 #endif // SECURITY_H
