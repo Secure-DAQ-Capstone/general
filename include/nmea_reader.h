@@ -32,9 +32,6 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
-//Current board id
-std::string board_id;
-
 // Call the encryption function from the security class
 encryption_data_t encryptString(std::string str, std::string board_id)
 {

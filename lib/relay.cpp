@@ -2,9 +2,9 @@
 #include "constants.h"
 
 // Constructor definition
-Relay::Relay(const Config &config, bool debug, bool debug_sub, string board_id)
+Relay::Relay(const Config &config, bool debug, bool debug_sub)
     : Base(config.receive_port, config.receive_ip, debug, debug_sub),
-      pub(config.publish_port, config.publish_ip, debug_sub), board_id(board_id) {}
+      pub(config.publish_port, config.publish_ip, debug_sub) {}
 
 void Relay::relay_packet(const std::string &packet_str)
 {
@@ -36,7 +36,7 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
 {
     // Create a new RelayChainEntry
     capstone_protobuf::MetaData::RelayChainEntry *entry = packet.mutable_metadata()->add_relay_chain();
-    entry->set_board_id(this->board_id);                                    // Set the board ID (example value)
+    entry->set_board_id(board_id);                                    // Set the board ID (example value)
     entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
 
     // Debug log

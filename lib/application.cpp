@@ -29,7 +29,6 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         // Get the nonce from the metadata
         std::string nonce_str = metadata_copy->nonce();
 
-        string board_id = metadata_copy->board_id_msg_origin();
         // Decrypt the payload
         std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str, board_id);
         
@@ -44,11 +43,12 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         packet_output.set_allocated_payload(payload);
 
         std::string signature_str = metadata_copy->digital_signature();
+        string signature_board_id = metadata_copy->board_id_msg_origin();
 
         std::string str_payload;
         packet_output.payload().SerializeToString(&str_payload);
 
-        bool verified_signature = verifyDigitalSignature(str_payload, signature_str, board_id);
+        bool verified_signature = verifyDigitalSignature(str_payload, signature_str, signature_board_id);
 
         packet_output.mutable_metadata()->set_signature_verified(verified_signature);
         // If the signature is not verified, log the packet
@@ -71,7 +71,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         else
         {
             //Add the public key to the metadata
-            unsigned char *public_key = security_agent.getKey(board_id);
+            unsigned char *public_key = security_agent.getKey(signature_board_id);
             packet_output.mutable_metadata()->set_public_key(public_key, crypto_sign_PUBLICKEYBYTES);
         }
 
