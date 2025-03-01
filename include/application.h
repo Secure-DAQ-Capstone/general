@@ -24,7 +24,7 @@ public:
     // Get an encrypted packet from the UDPSub
     bool get_encrypted_proto_packet(std::string packet_str, capstone_protobuf::EncryptedPacket &packet_output);
 
-    std::string decryptString(std::string str, std::string nonce_str, int board_id = 2)
+    std::string decryptString(std::string str, std::string nonce_str, string board_id)
     {
         unsigned char nonce[crypto_secretbox_NONCEBYTES];
 
@@ -40,7 +40,7 @@ public:
         return decrypted_str;
     }
 
-    bool verifyDigitalSignature(std::string data, std::string signature, int board_id = 2)
+    bool verifyDigitalSignature(std::string data, std::string signature, string board_id)
     {
 
         unsigned char sig[crypto_sign_BYTES];

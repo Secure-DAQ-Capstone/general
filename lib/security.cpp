@@ -45,9 +45,7 @@ unsigned char * security_base::assignKey(std::string stored_key_path, int type)
 
     if (!key_file.is_open())
     {
-        throw runtime_error("Failed to open key file");
-        key = '\0';
-        return key;
+        throw runtime_error("Failed to open key file for type " + to_string(type));
     }
 
     getline(key_file, key_string);
@@ -60,12 +58,12 @@ unsigned char * security_base::assignKey(std::string stored_key_path, int type)
 }
 
 // Encrypts a plaintext string using the provided key.
-vector<unsigned char> security_base::encrypt(const unsigned char * plaintext, int plaintext_len, unsigned char nonce[crypto_secretbox_NONCEBYTES], int board_id) 
+vector<unsigned char> security_base::encrypt(const unsigned char * plaintext, int plaintext_len, unsigned char nonce[crypto_secretbox_NONCEBYTES], std::string board_id) 
 {
     int ct_len = plaintext_len + crypto_secretbox_MACBYTES;
     
     //Get the private of the specific board
-    string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + to_string(board_id) + ".txt";
+    string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + board_id + ".txt";
 
     unsigned char * key = assignKey(key_path, 0);
 
@@ -80,14 +78,14 @@ vector<unsigned char> security_base::encrypt(const unsigned char * plaintext, in
     
 // Decrypts a ciphertext
 // Returns the decrypted plaintext string.
-vector<unsigned char> security_base::decrypt(vector<unsigned char> ciphertext, int ciphertext_len, const unsigned char nonce[crypto_secretbox_NONCEBYTES], int board_id) 
+vector<unsigned char> security_base::decrypt(vector<unsigned char> ciphertext, int ciphertext_len, const unsigned char nonce[crypto_secretbox_NONCEBYTES], std::string board_id) 
 {
     size_t pt_len = ciphertext_len - crypto_secretbox_MACBYTES;
 
     vector<unsigned char> plaintext(pt_len + 1);
 
     //Get the private of the specific board
-    string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + to_string(board_id) + ".txt";
+    string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + board_id + ".txt";
 
     unsigned char * key = assignKey(key_path, 0);
 
@@ -109,10 +107,10 @@ void security_base::generateNonce(unsigned char * nonce)
 }
 
 //Generates a digital signature for the data
-void security_base::generateSignature(const unsigned char* msg, int msg_len, unsigned char* sig, int board_id)
+void security_base::generateSignature(const unsigned char* msg, int msg_len, unsigned char* sig, std::string board_id)
 {
     //Get the private of the specific board
-    string key_path = string(getenv("HOME")) + "/.capstone_keys/private_key_" + to_string(board_id) + ".txt";
+    string key_path = string(getenv("HOME")) + "/.capstone_keys/private_key_" + board_id + ".txt";
     unsigned char * key = assignKey(key_path, 1);
 
     //The key in this function will be the private key
@@ -120,10 +118,10 @@ void security_base::generateSignature(const unsigned char* msg, int msg_len, uns
 }
 
 //Verifies the digital signature
-bool security_base::verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len, int board_id)
+bool security_base::verifySignature(const unsigned char sig[crypto_sign_BYTES], const unsigned char* msg, int msg_len, std::string board_id)
 {
     //Get the public key of the specific board
-    string key_path = string(getenv("HOME")) + "/.capstone_keys/public_key_" + to_string(board_id) + ".txt";
+    string key_path = string(getenv("HOME")) + "/.capstone_keys/public_key_" + board_id + ".txt";
     unsigned char * key = assignKey(key_path, 2);
 
     //The key in this function will be the public key
@@ -137,10 +135,10 @@ bool security_base::verifySignature(const unsigned char sig[crypto_sign_BYTES], 
     }
 }
 
-unsigned char * security_base::getKey(int board_id)
+unsigned char * security_base::getKey(std::string board_id)
 {
     //Get the public key of the specific board
-    string key_path = string(getenv("HOME")) + "/.capstone_keys/public_key_" + to_string(board_id) + ".txt";
+    string key_path = string(getenv("HOME")) + "/.capstone_keys/public_key_" + board_id + ".txt";
     unsigned char * key = assignKey(key_path, 2);
     
     return key;

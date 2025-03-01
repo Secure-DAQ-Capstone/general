@@ -32,8 +32,11 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
+//Current board id
+std::string board_id;
+
 // Call the encryption function from the security class
-encryption_data_t encryptString(std::string str, int board_id = 2)
+encryption_data_t encryptString(std::string str, std::string board_id)
 {
   unsigned char nonce[crypto_secretbox_NONCEBYTES];
   // Generate the nonce
@@ -54,7 +57,7 @@ encryption_data_t encryptString(std::string str, int board_id = 2)
 }
 
 // Call the decryption function from the security class
-std::string decryptString(std::string str, std::string nonce_str, int board_id = 2)
+std::string decryptString(std::string str, std::string nonce_str, std::string board_id)
 {
   unsigned char nonce[crypto_secretbox_NONCEBYTES];
 
@@ -92,7 +95,7 @@ std::string getDigitalSignature(capstone_protobuf::Packet &packet)
   std::string str_payload;
   packet.payload().SerializeToString(&str_payload);
 
-  int board_id = packet.metadata().board_id_msg_origin();
+  string board_id = packet.metadata().board_id_msg_origin();
   unsigned char digital_signature[crypto_sign_BYTES];
 
   security_agent.generateSignature((unsigned char *)str_payload.data(), str_payload.length(), digital_signature, board_id);
@@ -137,7 +140,7 @@ struct PacketArgs
 };
 
 void generateMetaData(
-    int32_t board_id,
+    std::string board_id,
     int32_t time_received,
     int32_t time_sent,
     capstone_protobuf::MetaData *metadata)
@@ -188,7 +191,7 @@ void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_dat
 {
   capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
 
-  generateMetaData(BOARD_ID_1, 12345, 0000, metadata);
+  generateMetaData(board_id, 12345, 0000, metadata);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,

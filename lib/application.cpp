@@ -29,7 +29,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         // Get the nonce from the metadata
         std::string nonce_str = metadata_copy->nonce();
 
-        int board_id = metadata_copy->board_id_msg_origin();
+        string board_id = metadata_copy->board_id_msg_origin();
         // Decrypt the payload
         std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str, board_id);
         
@@ -48,7 +48,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         std::string str_payload;
         packet_output.payload().SerializeToString(&str_payload);
 
-        bool verified_signature = verifyDigitalSignature(str_payload, signature_str);
+        bool verified_signature = verifyDigitalSignature(str_payload, signature_str, board_id);
 
         packet_output.mutable_metadata()->set_signature_verified(verified_signature);
         // If the signature is not verified, log the packet
@@ -86,7 +86,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
     catch (const std::exception &e)
     {
         std::cerr << this->formatErrorMessage(e.what()) << '\n';
-        if(e.what() == "Decryption failed")
+        if(e.what() == "Decryption failed" || e.what() == "Failed to open key file for type 0")
         {
             packet_output.set_allocated_metadata(encrypted_packet.release_metadata());
             capstone_protobuf::Packet::Payload *payload = new capstone_protobuf::Packet::Payload();
@@ -94,6 +94,11 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
             packet_output.set_allocated_payload(payload);
             packet_output.mutable_metadata()->set_signature_verified(false);
             packet_output.mutable_metadata()->set_decryption_succeeded(false);
+            return true;
+        }
+        else if (e.what() == "Failed to open key file for type 2")
+        {
+            packet_output.mutable_metadata()->set_signature_verified(false);
             return true;
         }
         return false;
