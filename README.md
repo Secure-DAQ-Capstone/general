@@ -79,39 +79,39 @@ You can also use the following table as a reference for the different machine id
 ```bash
 cd build
 ```
-3.1. To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
+  1. To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
+    
+  ```bash
+  ./nmea_reader <Machine ID>
+  ```
   
-```bash
-./nmea_reader <Machine ID>
-```
+  2. To run the relay application (Use the machine ID of the current board or device the application is running on)
   
-3.2. To run the relay application (Use the machine ID of the current board or device the application is running on)
+  ```bash
+  ./relay_main <Machine ID> [Reciever/Current IP][Published to IP]
+  ```
 
-```bash
-./relay_main <Machine ID> [Reciever/Current IP][Published to IP]
-```
+  3. To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
+  
+  ```bash
+  ./app_main <Machine ID>
+  ```
 
-3.3. To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
+  4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
+  
+  ```bash
+  ./mongo_app <Machine ID>
+  ```
 
-```bash
-./app_main <Machine ID>
-```
-
-3.4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
-
-```bash
-./mongo_app <Machine ID>
-```
-
-3.5. To run the sub or pub tests
-
-```bash
-# To run a publisher
-./udp_test pub 
-
-# To run a subscriber
-./upd_test sub
-```
+  5. To run the sub or pub tests
+  
+  ```bash
+  # To run a publisher
+  ./udp_test pub 
+  
+  # To run a subscriber
+  ./upd_test sub
+  ```
   
 ## SSH key setup
 
