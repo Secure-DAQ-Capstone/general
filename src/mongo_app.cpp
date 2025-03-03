@@ -38,6 +38,17 @@ int main()
 {
     // Init protobuf variables
     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    
+    if (argc < 2)
+    {
+        std::cout << "Usage: " << argv[0] << " <board_id>" << std::endl;
+        return 1;
+    }
+    else
+    {
+        //Get the board id
+        board_id = argv[1];
+    }
 
     // Init Application
     bool debug_application = true;
