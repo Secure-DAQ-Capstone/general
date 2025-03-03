@@ -97,7 +97,7 @@ cd build
    ./app_main <Machine ID>
    ```
    
-   3.4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
+   3.4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)**[Needs to be tested]**:
    
    ```bash
    ./mongo_app <Machine ID>
