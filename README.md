@@ -79,31 +79,31 @@ You can also use the following table as a reference for the different machine id
 ```bash
 cd build
 ```
-  1. To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
+  - To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
     
   ```bash
   ./nmea_reader <Machine ID>
   ```
   
-  2. To run the relay application (Use the machine ID of the current board or device the application is running on)
+  - To run the relay application (Use the machine ID of the current board or device the application is running on)
   
   ```bash
   ./relay_main <Machine ID> [Reciever/Current IP][Published to IP]
   ```
 
-  3. To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
+  - To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
   
   ```bash
   ./app_main <Machine ID>
   ```
 
-  4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
+  - To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
   
   ```bash
   ./mongo_app <Machine ID>
   ```
 
-  5. To run the sub or pub tests
+  - To run the sub or pub tests
   
   ```bash
   # To run a publisher
