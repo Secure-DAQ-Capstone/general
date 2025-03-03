@@ -40,6 +40,9 @@ socketCAN must be installed and working on your system - refer to the adapters u
 $ sudo /sbin/ip link set can0 up type can bitrate 250000
 ```
 
+## Key Exchange
+
+To set up the keys for the program, please refer to the Security Code [README](https://github.com/Secure-DAQ-Capstone/daq-code/blob/main/README.md)
 ## Build
 
 In the nmea_test directory:
