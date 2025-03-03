@@ -61,17 +61,17 @@ cat /etc/machine-id
 ```
 You can also use the following table as a reference for the different machine ids.
 ### IMPORTANT: Since the Ventana boards share the same machine-id, a number has been added at the end of Machine ID of 1, 3, and 4 to denote them as different
-|Machine Name| Machine ID|
-|Tony Computer| 06317250767f47b29c2f8d5e4c14e927|
-|Ventana 1| 4088253719cb401487ea11178840430d1|
-|Ventana 2| 4088253719cb401487ea11178840430d|
-|Ventana 3| 4088253719cb401487ea11178840430d3|
-|Ventana 4| 4088253719cb401487ea11178840430d4|
-|Fares' Laptop||
-|Dave's Laptop||
-|Matt's Laptop||
-|Michael's Laptop||
-|Grace's Laptop||
+| Machine Name | Machine ID |
+| Tony Computer | 06317250767f47b29c2f8d5e4c14e927 |
+| Ventana 1 | 4088253719cb401487ea11178840430d1 |
+| Ventana 2 | 4088253719cb401487ea11178840430d |
+| Ventana 3 | 4088253719cb401487ea11178840430d3 |
+| Ventana 4 | 4088253719cb401487ea11178840430d4 |
+| Fares' Laptop | |
+| Dave's Laptop | |
+| Matt's Laptop | |
+| Michael's Laptop | |
+| Grace's Laptop | |
 
 3. Run the desired application
 ```bash
