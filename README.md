@@ -61,6 +61,7 @@ cat /etc/machine-id
 ```
 You can also use the following table as a reference for the different machine ids.
 ### IMPORTANT: Since the Ventana boards share the same machine-id, a number has been added at the end of Machine ID of 1, 3, and 4 to denote them as different
+
 | Machine Name | Machine ID |
 | Tony Computer | 06317250767f47b29c2f8d5e4c14e927 |
 | Ventana 1 | 4088253719cb401487ea11178840430d1 |
@@ -77,39 +78,39 @@ You can also use the following table as a reference for the different machine id
 ```bash
 cd build
 ```
-   3.1. To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
+3.1. To run the nmea reader application (Use the machine ID of the current board or device the application is running on):
   
-  ```bash
-  ./nmea_reader <Machine ID>
-  ```
+```bash
+./nmea_reader <Machine ID>
+```
   
-  3.2. To run the relay application (Use the machine ID of the current board or device the application is running on)
-  
-  ```bash
-  ./relay_main <Machine ID> [Reciever/Current IP][Published to IP]
-  ```
-  
-  3.3. To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
- 
- ```bash
-  ./app_main <Machine ID>
-  ```
- 
- 3.4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
-  
-  ```bash
-  ./mongo_app <Machine ID>
-  ```
- 
-  3.5. To run the sub or pub tests
-  
-  ```bash
-  # To run a publisher
-  ./udp_test pub 
-  
-  # To run a subscriber
-  ./upd_test sub
-  ```
+3.2. To run the relay application (Use the machine ID of the current board or device the application is running on)
+
+```bash
+./relay_main <Machine ID> [Reciever/Current IP][Published to IP]
+```
+
+3.3. To run the Main Application without Database support (Use the machine ID of the current board or device the application is running on):
+
+```bash
+./app_main <Machine ID>
+```
+
+3.4. To run the Main Application with Database support (Use the machine ID of the current board or device the application is running on)[Needs to be tested]:
+
+```bash
+./mongo_app <Machine ID>
+```
+
+3.5. To run the sub or pub tests
+
+```bash
+# To run a publisher
+./udp_test pub 
+
+# To run a subscriber
+./upd_test sub
+```
   
 ## SSH key setup
 
