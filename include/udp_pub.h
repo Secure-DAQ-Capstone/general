@@ -15,6 +15,8 @@ public:
     UDPPub(int port, const char *address, bool debug = false, bool broadcast = false);
 
     void write(std::string message, bool debug = false);
+    void setPublishAddress(const char *address, int port);
+    
 
     ~UDPPub();
 

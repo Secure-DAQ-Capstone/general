@@ -5,7 +5,6 @@ UDPPub::UDPPub(int port, const char *address, bool debug, bool broadcast)
 {
     this->broadcastEnable = broadcast;
     this->debug = debug;
-    in_addr_t sendto_address = inet_addr(address); // ventana2
 
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (socket_fd < 0)
@@ -29,13 +28,22 @@ UDPPub::UDPPub(int port, const char *address, bool debug, bool broadcast)
         }
     }
 
+    setPublishAddress(address, port);
+}
+
+void UDPPub::setPublishAddress(const char *address, int port)
+{
     /**
      * Define the address that we want to send too.
      * This is saved as a private variable.
      *
      * If we are broadcasting, the ip address should be set to the computer's broadcast address.
      *
-     */
+    */
+    
+    in_addr_t sendto_address = inet_addr(address);
+
+
     memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_port = htons(port);

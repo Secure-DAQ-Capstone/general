@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
     // Parse command line arguments
     ParsedArgs args = parseArguments(argc, argv);
 
-     // Defaults for command line arguments
-     int receive_port = PUBLISHER_PORT;
-     int publish_port = PUBLISHER_PORT;
+    // Defaults for command line arguments
+    int receive_port = PUBLISHER_PORT;
+    int publish_port = PUBLISHER_PORT;
 
     Config config(receive_port, args.receive_ip, args.publish_ip, publish_port, args.machine_id);
 

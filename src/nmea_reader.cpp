@@ -1,5 +1,6 @@
 #include "nmea_reader.h"
 #include "constants.h"
+#include "arg_parser.h"
 // #include <N2kMessagesEnumToStr.h>
 
 tNMEA2000Handler NMEA2000Handlers[] = {
@@ -510,22 +511,13 @@ int main(int argc, char *argv[])
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   // Parse command line arguments
-  if (argc < 2)
-  {
-    cout << "Usage: " << argv[0] << " <machine_number>" << endl;
-    cout << "  <machine_number>: The number corresponding to the machine ID (e.g., 1 for Tony Computer)" << endl;
-    return 1;
-  }
-  else
-  {
-    // Get the machine ID based on the number
-    int machine_number = std::stoi(argv[1]);
-    GLOBAL_BOARD_ID = MachineRegistry::getMachineId(machine_number);
-    if (GLOBAL_BOARD_ID.empty()) {
-        std::cerr << "Invalid machine number: " << machine_number << std::endl;
-        return 1;
-    }
-  }
+  ParsedArgs args = parseArguments(argc, argv);
+
+  // set the board id for messages
+  GLOBAL_BOARD_ID = args.machine_id;
+
+  // update the published
+  pub.setPublishAddress(args.publish_ip, PUBLISHER_PORT);
 
   //Check if the symmetric key exists
   string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + GLOBAL_BOARD_ID + ".txt";
@@ -549,7 +541,6 @@ int main(int argc, char *argv[])
   }
   key_file_2.close();
 
-  // UDPPub pub(1,2,3);
   cout << "Starting CAN watching" << endl;
 
   setvbuf(stdout, NULL, _IONBF, 0); // No buffering on stdout, just send chars as they come.
