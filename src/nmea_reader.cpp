@@ -512,17 +512,23 @@ int main(int argc, char *argv[])
   // Parse command line arguments
   if (argc < 2)
   {
-    cout << "Usage: " << argv[0] << " <board_id>" << endl;
+    cout << "Usage: " << argv[0] << " <machine_number>" << endl;
+    cout << "  <machine_number>: The number corresponding to the machine ID (e.g., 1 for Tony Computer)" << endl;
     return 1;
   }
   else
   {
-    //Get the board id
-    board_id = argv[1];
+    // Get the machine ID based on the number
+    int machine_number = std::stoi(argv[1]);
+    GLOBAL_BOARD_ID = MachineRegistry::getMachineId(machine_number);
+    if (GLOBAL_BOARD_ID.empty()) {
+        std::cerr << "Invalid machine number: " << machine_number << std::endl;
+        return 1;
+    }
   }
 
   //Check if the symmetric key exists
-  string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + board_id + ".txt";
+  string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + GLOBAL_BOARD_ID + ".txt";
   
   ifstream key_file(key_path);
   if (!key_file.is_open())
@@ -533,7 +539,7 @@ int main(int argc, char *argv[])
   key_file.close();
 
   //Check if the private key for digital signature exists
-  std::string key_path_2 = string(getenv("HOME")) + "/.capstone_keys/private_key_" + board_id + ".txt";
+  std::string key_path_2 = string(getenv("HOME")) + "/.capstone_keys/private_key_" + GLOBAL_BOARD_ID + ".txt";
   
   ifstream key_file_2(key_path_2);
   if (!key_file_2.is_open())

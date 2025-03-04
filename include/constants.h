@@ -35,6 +35,32 @@ struct VisorLab
     static constexpr const char *MattLaptop = "10.0.0.108";
 };
 
+struct MachineInfo {
+    int number;
+    std::string name;
+    std::string id;
+
+    MachineInfo(int num, const std::string& nm, const std::string& mid)
+        : number(num), name(nm), id(mid) {}
+};
+
+
+struct MachineRegistry
+{
+    static const std::vector<MachineInfo> machines;
+
+    static std::string getMachineId(int number) {
+        for (const auto& machine: machines) {
+            if (machine.number == number) {
+                return machine.id;
+            }
+        }
+        return "";
+    }
+};
+
+// extern const std::vector<MachineInfo> MachineRegistry::machines;
+
 static constexpr const char *LOOPBACK_IP = "127.0.0.1";
 
 #define UDP_BUFFER_SIZE 500
@@ -48,13 +74,16 @@ struct Config
     const char *receive_ip;
     const char *publish_ip;
     int publish_port;
+    std::string machine_id;
 
-    Config(int r_port = 12345, const char *r_ip = LOOPBACK_IP, const char *p_ip = LOOPBACK_IP, int p_port = 12346)
-        : receive_port(r_port), receive_ip(r_ip), publish_ip(p_ip), publish_port(p_port) {}
+    Config(int r_port, const char *r_ip, const char *p_ip, int p_port, std::string machine_id)
+        : receive_port(r_port), receive_ip(r_ip), publish_ip(p_ip), publish_port(p_port), machine_id(machine_id) {}
 };
 
 static char *homeDir = getenv("HOME");
-extern std::string board_id;
+
+// Declare a static global board ID for the nmea reader
+extern std::string GLOBAL_BOARD_ID;
 
 #define BOARD_ID_1 1
 #define BOARD_ID_2 2

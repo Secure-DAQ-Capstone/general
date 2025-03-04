@@ -1,4 +1,7 @@
 #include "relay.h"
+#include "arg_parser.h"
+#include <string>
+#include <iostream>
 
 // Run the Relay class
 int main(int argc, char *argv[])
@@ -10,42 +13,16 @@ int main(int argc, char *argv[])
     bool debug_application = true;
     bool debug_sub = true;
 
-    // defaults for command line arguments
-    const char *receive_ip = VisorLab::Ventana1;
-    int receive_port = PUBLISHER_PORT;
+    // Parse command line arguments
+    ParsedArgs args = parseArguments(argc, argv);
 
-    // Publisher
-    const char *publish_ip = VisorLab::Tony;
-    int publish_port = PUBLISHER_PORT;
+     // Defaults for command line arguments
+     int receive_port = PUBLISHER_PORT;
+     int publish_port = PUBLISHER_PORT;
 
-    std::string board_id;
-    if (argc < 2)
-    {
-        std::cout << "Usage: " << argv[0] << " <board_id>" << std::endl;
-        return 1;
-    }
-    else
-    {
-        //Get the board id
-        board_id = argv[1];
-    }
+    Config config(receive_port, args.receive_ip, args.publish_ip, publish_port, args.machine_id);
 
-    // Parse command-line arguments
-    if (argc > 2)
-    {
-        receive_ip = argv[2];
-        std::cout << "Receive IP: " << receive_ip << std::endl;
-    }
-    if (argc > 3)
-    {
-        publish_ip = argv[3];
-        std::cout << "Publish IP: " << publish_ip << std::endl;
-    }
-
-
-    Config config(receive_port, receive_ip, publish_ip, publish_port);
-
-    Relay relay(config, debug_application, debug_sub, board_id);
+    Relay relay(config, debug_application, debug_sub);
 
     // run the loop
     while (true)

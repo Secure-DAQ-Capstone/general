@@ -4,11 +4,12 @@
 #include "base_subscriber.h"
 #include "constants.h"
 #include "udp_pub.h"
+#include <string>
 
 class Relay : public Base
 {
 public:
-    Relay(const Config &config, bool debug, bool debug_sub, string board_id);
+    Relay(const Config &config, bool debug, bool debug_sub);
 
     void relay_packet(const std::string &packet_str);
 
