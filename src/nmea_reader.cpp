@@ -454,7 +454,7 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
  * Define the UDP Publisher with default values and change them if needed in main
  */
 // defaults for command line arguments
-const char *publish_ip = VisorLab::FaresLaptop;
+const char *publish_ip = VisorLab::Ventana1;
 int publish_port = PUBLISHER_PORT;
 UDPPub pub(publish_port, publish_ip);
 
