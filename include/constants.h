@@ -32,6 +32,7 @@ struct VisorLab
     static constexpr const char *Tony = "10.0.0.1";
     static constexpr const char *FaresLaptop = "10.0.0.107";
     static constexpr const char *MattLaptop = "10.0.0.108";
+    static constexpr const char *DavidLaptop = "10.0.0.109";
 };
 
 static constexpr const char *LOOPBACK_IP = "127.0.0.1";
