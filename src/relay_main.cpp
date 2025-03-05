@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     bool debug_sub = true;
 
     // defaults for command line arguments
-    const char *receive_ip = VisorLab::Ventana1;
+    const char *receive_ip = "10.0.0.109";
     int receive_port = PUBLISHER_PORT;
 
     // Publisher

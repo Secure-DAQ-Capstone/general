@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     // Init Application
     bool debug_application = true;
     bool debug_sub = false;
-    Application application(PUBLISHER_PORT, VisorLab::FaresLaptop, debug_application, debug_sub);
+    Application application(PUBLISHER_PORT, "10.0.0.109", debug_application, debug_sub);
 
     // run the loop
     while (true)
