@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include "security.h"
+#include <string>
 
 struct GracesHouse
 {
@@ -40,8 +41,7 @@ static constexpr const char *LOOPBACK_IP = "127.0.0.1";
 #define UDP_BUFFER_SIZE 500
 #define PUBLISHER_PORT 8080
 
-extern security_base symmetric_key_security_agent;
-extern security_base signature_verifier_security_agent;
+extern security_base security_agent;
 
 struct Config
 {
@@ -55,6 +55,7 @@ struct Config
 };
 
 static char *homeDir = getenv("HOME");
+extern std::string board_id;
 
 #define BOARD_ID_1 1
 #define BOARD_ID_2 2

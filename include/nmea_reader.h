@@ -32,18 +32,15 @@ typedef struct
 tSocketStream serStream;
 std::vector<int> PGNS;
 
-security_base signer_security_agent(std::string(homeDir) + "/.capstone_keys/private_key_boards.txt", 1);
-
-// TODO - Temporary Implementations **********************************************************************
 // Call the encryption function from the security class
-encryption_data_t encryptString(std::string str)
+encryption_data_t encryptString(std::string str, std::string board_id)
 {
   unsigned char nonce[crypto_secretbox_NONCEBYTES];
   // Generate the nonce
-  symmetric_key_security_agent.generateNonce(nonce);
+  security_agent.generateNonce(nonce);
 
   // Encrypt the data and turn it into a string
-  vector<unsigned char> encrypted = symmetric_key_security_agent.encrypt((unsigned char *)str.data(), str.length(), nonce);
+  vector<unsigned char> encrypted = security_agent.encrypt((unsigned char *)str.data(), str.length(), nonce, board_id);
 
   string encrypted_str((const char *)(encrypted.data()), encrypted.size());
   string nonce_str(nonce, nonce + crypto_secretbox_NONCEBYTES);
@@ -57,7 +54,7 @@ encryption_data_t encryptString(std::string str)
 }
 
 // Call the decryption function from the security class
-std::string decryptString(std::string str, std::string nonce_str)
+std::string decryptString(std::string str, std::string nonce_str, std::string board_id)
 {
   unsigned char nonce[crypto_secretbox_NONCEBYTES];
 
@@ -66,12 +63,13 @@ std::string decryptString(std::string str, std::string nonce_str)
 
   // Decrypt the data
   vector<unsigned char> decrypted_array(str.begin(), str.end());
-  vector<unsigned char> decrypted = symmetric_key_security_agent.decrypt(decrypted_array, str.length(), nonce);
+  vector<unsigned char> decrypted = security_agent.decrypt(decrypted_array, str.length(), nonce, board_id);
   string decrypted_str(decrypted.begin(), decrypted.end());
 
   return decrypted_str;
 }
 
+//Debugging Function
 void udpSendStringToFile(std::string str)
 {
   std::string filename = "str_msgs.txt";
@@ -94,15 +92,15 @@ std::string getDigitalSignature(capstone_protobuf::Packet &packet)
   std::string str_payload;
   packet.payload().SerializeToString(&str_payload);
 
+  string board_id = packet.metadata().board_id_msg_origin();
   unsigned char digital_signature[crypto_sign_BYTES];
 
-  signer_security_agent.generateSignature((unsigned char *)str_payload.data(), str_payload.length(), digital_signature);
+  security_agent.generateSignature((unsigned char *)str_payload.data(), str_payload.length(), digital_signature, board_id);
 
   string digital_signature_str(reinterpret_cast<const char *>(digital_signature), crypto_sign_BYTES);
   return digital_signature_str;
 }
 
-//********************************************************************************************* */
 
 void Temperature(const tN2kMsg &N2kMsg);
 void OutsideEnvironmental(const tN2kMsg &N2kMsg);
@@ -139,7 +137,7 @@ struct PacketArgs
 };
 
 void generateMetaData(
-    int32_t board_id,
+    std::string board_id,
     int32_t time_received,
     int32_t time_sent,
     capstone_protobuf::MetaData *metadata)
@@ -151,7 +149,7 @@ void generateMetaData(
   // Make and add a relay chain entry
   capstone_protobuf::MetaData::RelayChainEntry *entry = metadata->add_relay_chain();
   entry->set_board_id(board_id);
-  entry->set_timestamp(time_received);
+  entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
 }
 
 template <typename T>
@@ -190,7 +188,7 @@ void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_dat
 {
   capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
 
-  generateMetaData(BOARD_ID_1, 12345, 0000, metadata);
+  generateMetaData(board_id, 12345, 0000, metadata);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,

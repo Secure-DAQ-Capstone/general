@@ -429,7 +429,8 @@ capstone_protobuf::EncryptedPacket encryptPayload(capstone_protobuf::Packet &pac
   std::string str_payload;
   packet.payload().SerializeToString(&str_payload);
 
-  encryption_data_t encrypted_payload = encryptString(str_payload);
+  std::string board_id = packet.metadata().board_id_msg_origin();
+  encryption_data_t encrypted_payload = encryptString(str_payload, board_id);
 
   std::string encrypted_payload_str = encrypted_payload.encrypted_string;
   std::string nonce_str = encrypted_payload.nonce;
@@ -507,6 +508,40 @@ void udpSend(capstone_protobuf::EncryptedPacket &encrypted_packet)
 int main(int argc, char *argv[])
 {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  // Parse command line arguments
+  if (argc < 2)
+  {
+    cout << "Usage: " << argv[0] << " <board_id>" << endl;
+    return 1;
+  }
+  else
+  {
+    //Get the board id
+    board_id = argv[1];
+  }
+
+  //Check if the symmetric key exists
+  string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + board_id + ".txt";
+  
+  ifstream key_file(key_path);
+  if (!key_file.is_open())
+  {
+    cerr << "Symmetric Key doesn't exist. Please generate one first!" << endl;
+    return 1;
+  }
+  key_file.close();
+
+  //Check if the private key for digital signature exists
+  std::string key_path_2 = string(getenv("HOME")) + "/.capstone_keys/private_key_" + board_id + ".txt";
+  
+  ifstream key_file_2(key_path_2);
+  if (!key_file_2.is_open())
+  {
+    cerr << "Private Key for digital signature doesn't exist. Please generate one first!" << endl;
+    return 1;
+  }
+  key_file_2.close();
 
   // UDPPub pub(1,2,3);
   cout << "Starting CAN watching" << endl;
