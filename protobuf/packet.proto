@@ -62,7 +62,8 @@ message MetaData
   bytes public_key = 7;
   
   bool signature_verified = 8;
-  bool decryption_succeeded = 9; 
+  bool decryption_succeeded = 9;
+  
 }
 
 
