@@ -16,9 +16,12 @@ public:
 
     void edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet);
 
+    void set_spoof_timestamp(bool spoof);
+
 protected:
     UDPPub pub;
-    string board_id;
+    std::string board_id;
+    bool sabotage;
 };
 
 #endif // RELAY_H

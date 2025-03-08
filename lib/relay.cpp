@@ -4,7 +4,7 @@
 // Constructor definition
 Relay::Relay(const Config &config, bool debug, bool debug_sub, string board_id)
     : Base(config.receive_port, config.receive_ip, debug, debug_sub),
-      pub(config.publish_port, config.publish_ip, debug_sub), board_id(board_id) {}
+      pub(config.publish_port, config.publish_ip, debug_sub), board_id(board_id), sabotage(false) {}
 
 void Relay::relay_packet(const std::string &packet_str)
 {
@@ -12,6 +12,7 @@ void Relay::relay_packet(const std::string &packet_str)
 
     // Parse the proto packet from a string
     bool success = get_encrypted_proto_packet(packet_str, encrypted_packet);
+    static bool first_packet = true;
 
     if (!success)
     {
@@ -26,6 +27,11 @@ void Relay::relay_packet(const std::string &packet_str)
         std::string packet_str;
         encrypted_packet.SerializeToString(&packet_str);
         pub.write(packet_str);
+        if (first_packet) {
+
+            std::cout << "Relay is receiving messages" << std::endl;
+            first_packet = false;
+        }
     }
 }
 
@@ -37,7 +43,18 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
     // Create a new RelayChainEntry
     capstone_protobuf::MetaData::RelayChainEntry *entry = packet.mutable_metadata()->add_relay_chain();
     entry->set_board_id(this->board_id);                                    // Set the board ID (example value)
-    entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
+    // entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
+
+    // Check the sabotage flag and set the timestamp accordingly
+    if (this->sabotage)
+    {
+        entry->set_timestamp(static_cast<int32_t>(time(nullptr)) - 3600); // Set the timestamp back an hour
+
+    }
+    else
+    {
+        entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
+    }
 
     // Debug log
     if (this->debug)
@@ -54,4 +71,9 @@ void Relay::update()
 
     // Relay the packet
     this->relay_packet(packet_str);
+}
+
+void Relay::set_spoof_timestamp(bool spoof)
+{
+    this->sabotage = spoof;
 }
