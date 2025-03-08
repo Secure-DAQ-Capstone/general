@@ -12,6 +12,7 @@ void Relay::relay_packet(const std::string &packet_str)
 
     // Parse the proto packet from a string
     bool success = get_encrypted_proto_packet(packet_str, encrypted_packet);
+    static bool first_packet = true;
 
     if (!success)
     {
@@ -26,6 +27,11 @@ void Relay::relay_packet(const std::string &packet_str)
         std::string packet_str;
         encrypted_packet.SerializeToString(&packet_str);
         pub.write(packet_str);
+        if (first_packet) {
+
+            std::cout << "Relay is receiving messages" << std::endl;
+            first_packet = false;
+        }
     }
 }
 
@@ -42,7 +48,8 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
     // Check the sabotage flag and set the timestamp accordingly
     if (this->sabotage)
     {
-        entry->set_timestamp(0); // Spoof the timestamp
+        entry->set_timestamp(static_cast<int32_t>(time(nullptr)) - 3600); // Set the timestamp back an hour
+
     }
     else
     {

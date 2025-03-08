@@ -24,6 +24,7 @@ void handle_user_input(Relay &relay, std::atomic<bool> &running)
         else if (command == "exit")
         {
             running = false;
+            std::cout << "Exiting..." << std::endl;
         }
     }
 }
@@ -35,8 +36,8 @@ int main(int argc, char *argv[])
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     // Init Application
-    bool debug_application = true;
-    bool debug_sub = true;
+    bool debug_application = false;
+    bool debug_sub = false;
 
     // defaults for command line arguments
     const char *receive_ip = "10.0.0.109";
@@ -79,7 +80,7 @@ int main(int argc, char *argv[])
     std::thread user_input_thread(handle_user_input, std::ref(relay), std::ref(running));
 
     // run the loop
-    while (true)
+    while (running)
     {
         relay.update();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
