@@ -8,6 +8,7 @@
 class ProtoJsonConverter {
 public:
     static std::string toJson(const capstone_protobuf::Packet &packet);
+    static std::string toJson(const capstone_protobuf::EncryptedPacket &packet);
 };
 
 #endif // PROTO_JSON_CONVERTER_H
