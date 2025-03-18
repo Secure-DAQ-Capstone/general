@@ -8,12 +8,13 @@ int main(int argc, char *argv[])
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     // Parse command line arguments
-  if (argc < 2)
-  {
-    cout << "Usage: " << argv[0] << " <machine_number>" << endl;
-    cout << "  <machine_number>: The number corresponding to the machine ID (e.g., 1 for Tony Computer)" << endl;
-    return 1;
-  }
+    if (argc < 2)
+    {
+        std::cout << "Usage: " << argv[0] << " <board_id> [receive_ip]" << std::endl;
+        std::cout << "  <board_id>    : The ID of the board." << std::endl;
+        std::cout << "  [receive_ip]  : The IP address to receive packets." << std::endl;
+        return 1;
+    }
   else
   {
     // Get the machine ID based on the number
@@ -22,14 +23,25 @@ int main(int argc, char *argv[])
     std::cout << "Machine ID: " << GLOBAL_BOARD_ID << std::endl;
     if (GLOBAL_BOARD_ID.empty()) {
         std::cerr << "Invalid machine number: " << machine_number << std::endl;
-        return 1;
     }
   }
+
+     // defaults for command line arguments
+     const char *receive_ip = VisorLab::Tony;;
+     int receive_port = PUBLISHER_PORT;
+ 
+     // Parse command-line arguments
+     if (argc > 2)
+     {
+         receive_ip = argv[2];
+         std::cout << "Receive IP: " << receive_ip << std::endl;
+     }
+ 
 
     // Init Application
     bool debug_application = true;
     bool debug_sub = false;
-    Application application(PUBLISHER_PORT, VisorLab::FaresLaptop, debug_application, debug_sub);
+    Application application(receive_port, receive_ip, debug_application, debug_sub);
 
     // run the loop
     while (true)

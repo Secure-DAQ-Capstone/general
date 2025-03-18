@@ -120,3 +120,9 @@ cd build
 
 Follow the steps from [GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux).
 
+
+## Push Button
+
+The on board push button is configured as a software reset, so clicking it during a demo is a bad idea. It loses ssh connection when the button is pressed. Another method?
+
+Send the board a message to start and stop sabatoging the time stamps.

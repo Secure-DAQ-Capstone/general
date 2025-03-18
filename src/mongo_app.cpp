@@ -34,7 +34,7 @@ void MongoApp::update()
 }
 
 // Run the Application class
-int main()
+int main(int argc, char *argv[])
 {
     // Init protobuf variables
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -54,7 +54,7 @@ int main()
     bool debug_application = true;
     bool debug_sub = false;
     size_t max_buffer_size = UDP_BUFFER_SIZE;
-    MongoApp mongo_app(PUBLISHER_PORT, LOOPBACK_IP, debug_application, debug_sub);
+    MongoApp mongo_app(PUBLISHER_PORT, "10.0.0.109", debug_application, debug_sub);
 
     // run the loop
     while (true)
