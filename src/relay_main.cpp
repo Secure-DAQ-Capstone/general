@@ -26,6 +26,16 @@ void handle_user_input(Relay &relay, std::atomic<bool> &running)
             relay.set_bitflip_bool(false);
             std::cout << "Bit Flipping disabled." << std::endl;
         }
+        else if (command == "sigflip")
+        {
+            relay.set_flip_signature_bool(true);
+            std::cout << "Digital Signature Bit Flipping enabled." << std::endl;
+        }
+        else if (command == "nosigflip")
+        {
+            relay.set_flip_signature_bool(false);
+            std::cout << "Digital Signature Bit Flipping disabled." << std::endl;
+        }
         else if (command == "stop")
         {
             relay.set_spoof_timestamp(false);

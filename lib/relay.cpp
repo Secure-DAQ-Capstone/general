@@ -62,6 +62,12 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
         (*payload)[0] ^= 1; 
     }
 
+    if (this->flip_signature)
+    {
+        std::string * signature = packet.mutable_metadata()->mutable_digital_signature();
+        (*signature)[0] ^= 1;
+    }
+
     // Debug log
     if (this->debug)
     {
@@ -87,4 +93,9 @@ void Relay::set_spoof_timestamp(bool spoof)
 void Relay::set_bitflip_bool(bool flip)
 {
     this->bit_flip = flip;
+}
+
+void Relay::set_flip_signature_bool(bool sig_flip)
+{
+    this->flip_signature = sig_flip;
 }

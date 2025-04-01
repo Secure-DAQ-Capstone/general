@@ -21,11 +21,14 @@ public:
 
     void set_bitflip_bool(bool flip);
 
+    void set_flip_signature_bool(bool sig_flip);
+
 protected:
     UDPPub pub;
     std::string board_id;
     bool sabotage;
     bool bit_flip;
+    bool flip_signature;
 };
 
 #endif // RELAY_H
