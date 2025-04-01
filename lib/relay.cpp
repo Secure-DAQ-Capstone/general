@@ -56,6 +56,12 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
         entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
     }
 
+    if (this->bit_flip)
+    {
+        std::string * payload = packet.mutable_encrypted_payload();
+        (*payload)[0] ^= 1; 
+    }
+
     // Debug log
     if (this->debug)
     {
@@ -76,4 +82,9 @@ void Relay::update()
 void Relay::set_spoof_timestamp(bool spoof)
 {
     this->sabotage = spoof;
+}
+
+void Relay::set_bitflip_bool(bool flip)
+{
+    this->bit_flip = flip;
 }

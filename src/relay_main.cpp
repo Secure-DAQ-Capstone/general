@@ -16,6 +16,16 @@ void handle_user_input(Relay &relay, std::atomic<bool> &running)
             relay.set_spoof_timestamp(true);
             std::cout << "Timestamp spoofing enabled." << std::endl;
         }
+        else if (command == "flip")
+        {
+            relay.set_bitflip_bool(true);
+            std::cout << "Bit Flipping enabled." << std::endl;
+        }
+        else if (command == "noflip")
+        {
+            relay.set_bitflip_bool(false);
+            std::cout << "Bit Flipping disabled." << std::endl;
+        }
         else if (command == "stop")
         {
             relay.set_spoof_timestamp(false);

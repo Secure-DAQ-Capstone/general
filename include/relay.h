@@ -19,10 +19,13 @@ public:
 
     void set_spoof_timestamp(bool spoof);
 
+    void set_bitflip_bool(bool flip);
+
 protected:
     UDPPub pub;
     std::string board_id;
     bool sabotage;
+    bool bit_flip;
 };
 
 #endif // RELAY_H
