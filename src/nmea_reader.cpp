@@ -1,5 +1,6 @@
 #include "nmea_reader.h"
 #include "constants.h"
+#include "arg_parser.h"
 // #include <N2kMessagesEnumToStr.h>
 
 tNMEA2000Handler NMEA2000Handlers[] = {
@@ -510,19 +511,16 @@ int main(int argc, char *argv[])
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   // Parse command line arguments
-  if (argc < 2)
-  {
-    cout << "Usage: " << argv[0] << " <board_id>" << endl;
-    return 1;
-  }
-  else
-  {
-    //Get the board id
-    board_id = argv[1];
-  }
+  ParsedArgs args = parseArguments(argc, argv);
+
+  // set the board id for messages
+  GLOBAL_BOARD_ID = args.machine_id;
+
+  // update the published
+  pub.setPublishAddress(args.publish_ip, PUBLISHER_PORT);
 
   //Check if the symmetric key exists
-  string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + board_id + ".txt";
+  string key_path = string(getenv("HOME")) + "/.capstone_keys/symmetric_key_" + GLOBAL_BOARD_ID + ".txt";
   
   ifstream key_file(key_path);
   if (!key_file.is_open())
@@ -533,7 +531,7 @@ int main(int argc, char *argv[])
   key_file.close();
 
   //Check if the private key for digital signature exists
-  std::string key_path_2 = string(getenv("HOME")) + "/.capstone_keys/private_key_" + board_id + ".txt";
+  std::string key_path_2 = string(getenv("HOME")) + "/.capstone_keys/private_key_" + GLOBAL_BOARD_ID + ".txt";
   
   ifstream key_file_2(key_path_2);
   if (!key_file_2.is_open())
@@ -543,7 +541,6 @@ int main(int argc, char *argv[])
   }
   key_file_2.close();
 
-  // UDPPub pub(1,2,3);
   cout << "Starting CAN watching" << endl;
 
   setvbuf(stdout, NULL, _IONBF, 0); // No buffering on stdout, just send chars as they come.

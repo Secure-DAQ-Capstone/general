@@ -30,7 +30,7 @@ bool Application::get_proto_packet(std::string packet_str, capstone_protobuf::Pa
         std::string nonce_str = metadata_copy->nonce();
 
         // Decrypt the payload
-        std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str, board_id);
+        std::string payload_str = decryptString(encrypted_packet.encrypted_payload(), nonce_str, GLOBAL_BOARD_ID);
         
         metadata_copy->set_decryption_succeeded(true);
 

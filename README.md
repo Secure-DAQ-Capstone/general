@@ -73,7 +73,7 @@ You can also use the following table as a reference for the different machine id
 | Ventana 3 | 4088253719cb401487ea11178840430d3 |
 | Ventana 4 | 4088253719cb401487ea11178840430d4 |
 | Fares' Laptop | |
-| Dave's Laptop | |
+| Dave's Laptop |6e824f19507d4a1dac5e15101c0ae908|
 | Matt's Laptop | |
 | Michael's Laptop | |
 | Grace's Laptop | |

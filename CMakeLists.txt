@@ -59,6 +59,10 @@ add_library(libudp_sub
   lib/udp_sub.cpp
 )
 
+add_library(args_parser
+  lib/arg_parser.cpp
+)
+
 
 # Find and link MongoDB libraries
 find_package(PkgConfig)
@@ -105,6 +109,7 @@ target_link_libraries(nmea_reader
     libudp_pub
     libudp_sub
     security
+    args_parser
     constants
 )
 
@@ -199,6 +204,7 @@ target_link_libraries(app_main
   libudp_sub
   application
   security
+  args_parser
   constants
 )
 
@@ -226,6 +232,9 @@ target_link_libraries(relay_main
   libudp_pub
   relay
   base
+  args_parser
+  constants
+  security
 )
 
 add_dependencies(relay_main protobuf_generated)

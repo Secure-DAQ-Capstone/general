@@ -2,9 +2,9 @@
 #include "constants.h"
 
 // Constructor definition
-Relay::Relay(const Config &config, bool debug, bool debug_sub, string board_id)
+Relay::Relay(const Config &config, bool debug, bool debug_sub)
     : Base(config.receive_port, config.receive_ip, debug, debug_sub),
-      pub(config.publish_port, config.publish_ip, debug_sub), board_id(board_id), sabotage(false) {}
+      pub(config.publish_port, config.publish_ip, debug_sub), board_id(config.machine_id), sabotage(false) {}
 
 void Relay::relay_packet(const std::string &packet_str)
 {
@@ -56,6 +56,18 @@ void Relay::edit_packet_metadata(capstone_protobuf::EncryptedPacket &packet)
         entry->set_timestamp(static_cast<int32_t>(time(nullptr))); // Set the current timestamp
     }
 
+    if (this->bit_flip)
+    {
+        std::string * payload = packet.mutable_encrypted_payload();
+        (*payload)[0] ^= 1; 
+    }
+
+    if (this->flip_signature)
+    {
+        std::string * signature = packet.mutable_metadata()->mutable_digital_signature();
+        (*signature)[0] ^= 1;
+    }
+
     // Debug log
     if (this->debug)
     {
@@ -76,4 +88,14 @@ void Relay::update()
 void Relay::set_spoof_timestamp(bool spoof)
 {
     this->sabotage = spoof;
+}
+
+void Relay::set_bitflip_bool(bool flip)
+{
+    this->bit_flip = flip;
+}
+
+void Relay::set_flip_signature_bool(bool sig_flip)
+{
+    this->flip_signature = sig_flip;
 }

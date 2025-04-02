@@ -188,7 +188,7 @@ void generateAndSendPacket(google::protobuf::Timestamp *timestamp, T &sensor_dat
 {
   capstone_protobuf::MetaData *metadata = new capstone_protobuf::MetaData();
 
-  generateMetaData(board_id, 12345, 0000, metadata);
+  generateMetaData(GLOBAL_BOARD_ID, 12345, 0000, metadata);
   capstone_protobuf::Packet packet = generatePacket(
       timestamp, sensor_data,
       label, original_msg_id,

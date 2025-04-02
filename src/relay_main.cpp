@@ -16,6 +16,26 @@ void handle_user_input(Relay &relay, std::atomic<bool> &running)
             relay.set_spoof_timestamp(true);
             std::cout << "Timestamp spoofing enabled." << std::endl;
         }
+        else if (command == "flip")
+        {
+            relay.set_bitflip_bool(true);
+            std::cout << "Bit Flipping enabled." << std::endl;
+        }
+        else if (command == "noflip")
+        {
+            relay.set_bitflip_bool(false);
+            std::cout << "Bit Flipping disabled." << std::endl;
+        }
+        else if (command == "sigflip")
+        {
+            relay.set_flip_signature_bool(true);
+            std::cout << "Digital Signature Bit Flipping enabled." << std::endl;
+        }
+        else if (command == "nosigflip")
+        {
+            relay.set_flip_signature_bool(false);
+            std::cout << "Digital Signature Bit Flipping disabled." << std::endl;
+        }
         else if (command == "stop")
         {
             relay.set_spoof_timestamp(false);
@@ -28,6 +48,9 @@ void handle_user_input(Relay &relay, std::atomic<bool> &running)
         }
     }
 }
+#include "arg_parser.h"
+#include <string>
+#include <iostream>
 
 // Run the Relay class
 int main(int argc, char *argv[])
@@ -39,42 +62,16 @@ int main(int argc, char *argv[])
     bool debug_application = false;
     bool debug_sub = false;
 
-    // defaults for command line arguments
-    const char *receive_ip = "10.0.0.109";
-    int receive_port = PUBLISHER_PORT;
+    // Parse command line arguments
+    ParsedArgs args = parseArguments(argc, argv);
 
-    // Publisher
-    const char *publish_ip = VisorLab::Tony;
+    // Defaults for command line arguments
+    int receive_port = PUBLISHER_PORT;
     int publish_port = PUBLISHER_PORT;
 
-    std::string board_id;
-    if (argc < 2)
-    {
-        std::cout << "Usage: " << argv[0] << " <board_id>" << std::endl;
-        return 1;
-    }
-    else
-    {
-        //Get the board id
-        board_id = argv[1];
-    }
+    Config config(receive_port, args.receive_ip, args.publish_ip, publish_port, args.machine_id);
 
-    // Parse command-line arguments
-    if (argc > 2)
-    {
-        receive_ip = argv[2];
-        std::cout << "Receive IP: " << receive_ip << std::endl;
-    }
-    if (argc > 3)
-    {
-        publish_ip = argv[3];
-        std::cout << "Publish IP: " << publish_ip << std::endl;
-    }
-
-
-    Config config(receive_port, receive_ip, publish_ip, publish_port);
-
-    Relay relay(config, debug_application, debug_sub, board_id);
+    Relay relay(config, debug_application, debug_sub);
 
     std::atomic<bool> running(true);
     std::thread user_input_thread(handle_user_input, std::ref(relay), std::ref(running));
